@@ -15,10 +15,12 @@ function mapStrapiToRecipe(data: any): Recipe {
 
   // Extract tags from object format to array
   const extractTags = (tagsData: any): string[] => {
-    if (Array.isArray(tagsData)) return tagsData;
-    if (typeof tagsData === "object" && tagsData !== null) {
-      return Object.keys(tagsData).concat(
-        Object.values(tagsData).filter((v) => typeof v === "string")
+    if (!tagsData) return [];
+    if (Array.isArray(tagsData))
+      return tagsData.filter((t) => typeof t === "string");
+    if (typeof tagsData === "object") {
+      return Object.keys(tagsData).filter(
+        (key) => key && typeof key === "string"
       );
     }
     return [];
@@ -145,9 +147,9 @@ export async function getCategories(): Promise<
     if (!res.ok) throw new Error(`Strapi responded ${res.status}`);
     const json = await res.json();
     const categories = (json.data || []).map((c: any) => ({
-      id: String(c.id ?? ""),
-      name: c.attributes?.name ?? "Unknown",
-      slug: c.attributes?.slug ?? `cat-${c.id}`,
+      id: String(c.id ?? c.documentId ?? ""),
+      name: c.name ?? "Unknown",
+      slug: c.slug ?? `cat-${c.id}`,
     }));
     return categories;
   } catch (err) {
