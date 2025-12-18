@@ -8,6 +8,9 @@ export default defineConfig({
     host: "::",
     port: 8080,
   },
+  preview: {
+    allowedHosts: ["retete.up.railway.app"],
+  },
   plugins: [react()],
   resolve: {
     alias: {
