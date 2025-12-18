@@ -7,77 +7,64 @@ function mapStrapiToRecipe(data: any): Recipe {
   // Defensive mapping: if fields are missing, fall back to reasonable defaults
 
   // Helper to construct full image URL
-  const getImageUrl = (url: string | undefined): string => {
-    if (!url) return "";
+  const getImageUrl = (url: any): string => {
+    if (!url || typeof url !== "string") return "";
     if (url.startsWith("http")) return url;
     return `${STRAPI_URL}${url}`;
   };
 
+  // Extract tags from object format to array
+  const extractTags = (tagsData: any): string[] => {
+    if (Array.isArray(tagsData)) return tagsData;
+    if (typeof tagsData === "object" && tagsData !== null) {
+      return Object.keys(tagsData).concat(
+        Object.values(tagsData).filter((v) => typeof v === "string")
+      );
+    }
+    return [];
+  };
+
   return {
-    id: String(data.id ?? data._id ?? Math.random()),
-    slug:
-      data.attributes?.slug ?? data.slug ?? data.id ?? String(data.id ?? ""),
-    title: data.attributes?.title ?? data.title ?? "Untitled",
-    description: data.attributes?.description ?? data.description ?? "",
+    id: String(data.id ?? data.documentId ?? Math.random()),
+    slug: data.slug ?? String(data.id ?? ""),
+    title: data.title ?? "Untitled",
+    description: data.description ?? "",
     coverImage: getImageUrl(
-      data.attributes?.coverImage?.data?.attributes?.formats?.medium?.url ||
-        data.attributes?.coverImage?.data?.attributes?.url ||
-        data.coverImage ||
-        data.attributes?.coverImage
+      data.coverImage?.formats?.medium?.url ||
+        data.coverImage?.formats?.small?.url ||
+        data.coverImage?.url
     ),
-    galleryImages:
-      (data.attributes?.galleryImages?.data || data.galleryImages || []).map(
-        (g: any) => {
-          const url =
-            g?.attributes?.formats?.medium?.url ||
-            g?.attributes?.url ||
-            g ||
-            "";
-          return getImageUrl(url);
-        }
-      ) || [],
-    ingredients: (data.attributes?.ingredients || data.ingredients || []).map(
-      (ing: any, idx: number) => ({
-        id: String(ing.id ?? idx),
-        item: ing.item ?? ing.name ?? "",
-        quantity: ing.quantity ?? "",
-        unit: ing.unit ?? "",
-        notes: ing.notes ?? "",
-      })
+    galleryImages: (data.galleryImages || []).map((img: any) =>
+      getImageUrl(
+        img?.formats?.medium?.url || img?.formats?.small?.url || img?.url
+      )
     ),
-    instructions: (
-      data.attributes?.instructions ||
-      data.instructions ||
-      []
-    ).map((ins: any, idx: number) => ({
+    ingredients: (data.ingredients || []).map((ing: any, idx: number) => ({
+      id: String(ing.id ?? idx),
+      item: ing.item ?? "",
+      quantity: ing.quantity ?? "",
+      unit: ing.unit ?? "",
+      notes: ing.notes ?? "",
+    })),
+    instructions: (data.instructions || []).map((ins: any, idx: number) => ({
       id: String(ins.id ?? idx),
       stepNumber: ins.stepNumber ?? idx + 1,
-      description: ins.description ?? ins.text ?? "",
-      image: ins.image?.url
-        ? getImageUrl(ins.image.url)
-        : ins.image
-        ? getImageUrl(ins.image)
-        : undefined,
+      description: ins.description ?? "",
+      image: ins.image?.url ? getImageUrl(ins.image.url) : undefined,
       tips: ins.tips ?? undefined,
     })),
-    prepTime: Number(data.attributes?.prepTime ?? data.prepTime ?? 0),
-    cookTime: Number(data.attributes?.cookTime ?? data.cookTime ?? 0),
-    servings: Number(data.attributes?.servings ?? data.servings ?? 1),
-    difficulty: (data.attributes?.difficulty ??
-      data.difficulty ??
-      "Medium") as any,
-    categories: (
-      data.attributes?.categories?.data ||
-      data.categories ||
-      []
-    ).map((c: any) => ({
-      id: String(c.id ?? c._id ?? c.id),
-      name: c.attributes?.name ?? c.name ?? c,
-      slug: c.attributes?.slug ?? c.slug ?? String(c.id ?? c._id ?? c),
+    prepTime: Number(data.prepTime ?? 0),
+    cookTime: Number(data.cookTime ?? 0),
+    servings: Number(data.servings ?? 1),
+    difficulty: (data.difficulty ?? "Medium") as any,
+    categories: (data.categories || []).map((c: any) => ({
+      id: String(c.id ?? c.documentId),
+      name: c.name ?? "Unknown",
+      slug: c.slug ?? String(c.id ?? ""),
     })),
-    tags: data.attributes?.tags ?? data.tags ?? [],
-    createdAt: data.attributes?.createdAt ?? data.createdAt,
-    updatedAt: data.attributes?.updatedAt ?? data.updatedAt,
+    tags: extractTags(data.tags),
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
   } as Recipe;
 }
 
@@ -92,7 +79,10 @@ export async function getRecipes(): Promise<Recipe[]> {
 
   try {
     const res = await fetch(
-      `${STRAPI_URL.replace(/\/$/, "")}/api/recipes?populate=*`
+      `${STRAPI_URL.replace(
+        /\/$/,
+        ""
+      )}/api/recipes?populate[0]=coverImage&populate[1]=galleryImages&populate[2]=ingredients&populate[3]=instructions&populate[4]=categories`
     );
     if (!res.ok) throw new Error(`Strapi responded ${res.status}`);
     const json = await res.json();
@@ -120,7 +110,9 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
       `${STRAPI_URL.replace(
         /\/$/,
         ""
-      )}/api/recipes?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`
+      )}/api/recipes?filters[slug][$eq]=${encodeURIComponent(
+        slug
+      )}&populate[0]=coverImage&populate[1]=galleryImages&populate[2]=ingredients&populate[3]=instructions&populate[4]=categories`
     );
     if (!res.ok) throw new Error(`Strapi responded ${res.status}`);
     const json = await res.json();
@@ -129,14 +121,8 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
       console.log(`⚠️ Recipe with slug "${slug}" not found in Strapi`);
       return null;
     }
-    console.log(`✅ Successfully fetched recipe "${slug}" from Strapi`);
     return mapStrapiToRecipe(item);
   } catch (err) {
-    console.error(
-      `❌ Error fetching recipe by slug "${slug}" from Strapi`,
-      err
-    );
-    console.log("⚠️ FALLBACK: Searching sample recipes");
     return sampleRecipes.find((r) => r.slug === slug) ?? null;
   }
 }
@@ -145,9 +131,6 @@ export async function getCategories(): Promise<
   { id: string; name: string; slug: string }[]
 > {
   if (!STRAPI_URL) {
-    console.log(
-      "⚠️ FALLBACK: VITE_STRAPI_URL not configured, using default categories"
-    );
     return Promise.resolve([
       { id: "italian", name: "Italian", slug: "italian" },
       { id: "seafood", name: "Seafood", slug: "seafood" },
@@ -166,14 +149,8 @@ export async function getCategories(): Promise<
       name: c.attributes?.name ?? "Unknown",
       slug: c.attributes?.slug ?? `cat-${c.id}`,
     }));
-    console.log(
-      `✅ Successfully fetched ${categories.length} categories from Strapi:`,
-      categories
-    );
     return categories;
   } catch (err) {
-    console.error("❌ Error fetching categories from Strapi", err);
-    console.log("⚠️ FALLBACK: Returning empty categories");
     return [];
   }
 }
@@ -183,10 +160,6 @@ export async function searchRecipes(query: string): Promise<Recipe[]> {
   if (!q) return getRecipes();
 
   if (!STRAPI_URL) {
-    // client-side fallback search over sample recipes
-    console.log(
-      `⚠️ FALLBACK: VITE_STRAPI_URL not configured, searching sample recipes for: "${q}"`
-    );
     const lower = q.toLowerCase();
     return sampleRecipes.filter(
       (r) =>
@@ -212,18 +185,10 @@ export async function searchRecipes(query: string): Promise<Recipe[]> {
     const json = await res.json();
     const data = json.data || [];
 
-    // If server-side returned results, map and return
     if (data.length > 0) {
-      console.log(
-        `✅ Found ${data.length} recipes in Strapi for query: "${q}"`
-      );
       return data.map((item: any) => mapStrapiToRecipe(item));
     }
 
-    // Otherwise, fetch all and perform client-side filtering to include ingredients/instructions
-    console.log(
-      `⚠️ No server-side results for "${q}", performing client-side search`
-    );
     const all = await getRecipes();
     const lower = q.toLowerCase();
     return all.filter(
@@ -237,12 +202,6 @@ export async function searchRecipes(query: string): Promise<Recipe[]> {
         )
     );
   } catch (err) {
-    console.error(
-      `❌ Error searching recipes in Strapi for query: "${q}"`,
-      err
-    );
-    console.log("⚠️ FALLBACK: Using client-side search on sample recipes");
-    // fallback to client-side search
     const lower = q.toLowerCase();
     return (await getRecipes()).filter(
       (r) =>
