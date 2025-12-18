@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     host: "::",
     port: 8080,
+    allowedHosts: ["retete.up.railway.app"],
   },
   preview: {
     allowedHosts: ["retete.up.railway.app"],
