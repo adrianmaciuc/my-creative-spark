@@ -510,123 +510,277 @@ Step 5: Bake for 12-15 minutes until crust is golden
 
 ---
 
-## 🧪 Phase 3: Testing & Polish (Week 3)
+## 🧪 Phase 3: E2E Testing with Playwright (Week 3)
 
-### Step 3.1: Cross-Browser Testing
+### Step 3.1: Setup Playwright Testing Framework
 
-**Time: 1 hour**
-
-**Test Checklist**:
-
-- [ ] Chrome/Edge (desktop)
-- [ ] Firefox (desktop)
-- [ ] Safari (desktop, if on Mac)
-- [ ] Chrome (mobile - use DevTools)
-- [ ] Safari (mobile - use DevTools or real device)
-
-**Test Points**:
-
-- Homepage loads correctly
-- Recipe cards display properly
-- Recipe detail page layouts correctly
-- Search functionality works
-- Images load and optimize
-- Fonts render correctly
-- Colors match design
-- Hover effects work (desktop)
-- Touch interactions work (mobile)
-
----
-
-### Step 3.2: Responsive Design Testing
-
-**Time: 1 hour**
-
-**Breakpoints to Test**:
-
-- [ ] Mobile S (320px) - 1 card
-- [ ] Mobile M (375px) - 1 card
-- [ ] Mobile L (425px) - 2 cards
-- [ ] Tablet (768px) - 3 cards
-- [ ] Laptop (1024px) - 4 cards
-- [ ] Desktop (1440px) - 4 cards
+**Time: 30 minutes**
 
 **Actions**:
 
-- Use browser DevTools responsive mode
-- Test all breakpoints
-- Fix any layout issues
-- Ensure text remains readable
-- Check image sizes
+1. Install Playwright and dependencies:
 
----
+   ```bash
+   npm install -D @playwright/test
+   npm install -D @playwright/test @testing-library/react
+   ```
 
-### Step 3.3: Performance Optimization
+2. Initialize Playwright configuration:
 
-**Time: 1 hour**
+   ```bash
+   npx playwright install
+   ```
 
-**Actions**:
+3. Create test directory structure:
 
-1. Run Lighthouse audit in Chrome DevTools
-2. Check metrics:
-   - Performance score > 90
-   - Accessibility score > 90
-   - Best Practices score > 90
-   - SEO score > 90
+   ```
+   playwright/
+   ├── tests/
+   │   ├── home.spec.ts
+   │   ├── recipe-detail.spec.ts
+   │   ├── search.spec.ts
+   │   └── navigation.spec.ts
+   ├── fixtures/
+   │   └── test-data.ts
+   └── config/
+       └── playwright.config.ts
+   ```
 
-**Optimization Tasks**:
-
-- [ ] Images optimized (lazy loading, proper sizes)
-- [ ] Fonts preloaded
-- [ ] Unused CSS removed
-- [ ] JavaScript minified
-- [ ] Lazy loading implemented
-
----
-
-### Step 3.4: Add Loading & Error States
-
-**Time: 1 hour**
-
-**Actions**:
-
-1. Add loading skeletons for:
-   - Recipe cards
-   - Recipe detail page
-   - Search results
-2. Add error boundaries
-3. Add 404 page for missing recipes
-4. Test error scenarios:
-   - Network offline
-   - API returns error
-   - Recipe not found
+4. Update `package.json` scripts:
+   ```json
+   "test:e2e": "playwright test",
+   "test:e2e:ui": "playwright test --ui",
+   "test:e2e:headed": "playwright test --headed"
+   ```
 
 **Expected Result**:
 
-- ✅ Smooth loading experience
-- ✅ Graceful error handling
-- ✅ User-friendly error messages
+- ✅ Playwright installed
+- ✅ Test directory structure created
+- ✅ npm scripts configured
 
 ---
 
-### Step 3.5: Accessibility Improvements
+### Step 3.2: Configure Playwright for Fallback Data
+
+**Time: 20 minutes**
+
+**Actions**:
+
+1. Create `playwright.config.ts`:
+
+   - Base URL: `http://localhost:5173` (Vite dev server)
+   - Timeout: 30 seconds
+   - Retries: 1 (for flaky tests)
+   - Screenshots on failure
+   - Video on failure
+
+2. Set environment variables:
+
+   - `VITE_STRAPI_URL` should NOT be set (forces fallback to sample data)
+   - Tests run against sample recipes only
+
+3. Create test fixtures with sample data
+
+**Expected Result**:
+
+- ✅ Config file created
+- ✅ Environment setup for fallback testing
+- ✅ No backend required for tests
+
+---
+
+### Step 3.3: Write Homepage E2E Tests
+
+**Time: 1 hour**
+
+**Test File**: `playwright/tests/home.spec.ts`
+
+**Test Scenarios**:
+
+- [ ] Homepage loads successfully
+- [ ] All sample recipes display in grid
+- [ ] Recipe cards show correct information (title, description, time, servings)
+- [ ] Recipe cards are responsive (4 cards on desktop, 3 on tablet, 2 on mobile)
+- [ ] Category filter buttons appear
+- [ ] Category filter works (click Italian, only Italian recipes show)
+- [ ] Hero section displays
+- [ ] Search bar is visible
+- [ ] Header with logo links to home
+
+**Expected Result**:
+
+- ✅ All homepage tests passing
+- ✅ Grid responsive behavior verified
+
+---
+
+### Step 3.4: Write Recipe Detail Page E2E Tests
+
+**Time: 1 hour**
+
+**Test File**: `playwright/tests/recipe-detail.spec.ts`
+
+**Test Scenarios**:
+
+- [ ] Clicking recipe card navigates to detail page
+- [ ] Recipe title displays correctly
+- [ ] Recipe description displays
+- [ ] Ingredients list shows all ingredients
+- [ ] Instructions display with step numbers
+- [ ] Times (prep, cook, total) display correctly
+- [ ] Servings display correctly
+- [ ] Difficulty badge shows correct level
+- [ ] Cover image loads
+- [ ] Gallery images load (if present)
+- [ ] Back navigation works (back button or logo click)
+- [ ] Tags display if present
+
+**Expected Result**:
+
+- ✅ All recipe detail tests passing
+- ✅ Navigation working correctly
+
+---
+
+### Step 3.5: Write Search E2E Tests
+
+**Time: 1 hour**
+
+**Test File**: `playwright/tests/search.spec.ts`
+
+**Test Scenarios**:
+
+- [ ] Search bar is functional
+- [ ] Typing in search triggers filter
+- [ ] Search works by recipe title
+- [ ] Search works by description keywords
+- [ ] Search works by ingredient names
+- [ ] Search shows results in grid format
+- [ ] Search with no results shows appropriate message
+- [ ] Clear search resets to all recipes
+- [ ] Search is case-insensitive
+
+**Expected Result**:
+
+- ✅ All search tests passing
+- ✅ Search across all fields working
+
+---
+
+### Step 3.6: Write Navigation E2E Tests
+
+**Time: 45 minutes**
+
+**Test File**: `playwright/tests/navigation.spec.ts`
+
+**Test Scenarios**:
+
+- [ ] Logo click navigates to home
+- [ ] Recipe card click navigates to detail page
+- [ ] Category filter preserves URL
+- [ ] Back button works on recipe page
+- [ ] Search query updates URL
+- [ ] Page refresh maintains correct state
+- [ ] Mobile menu works (if applicable)
+
+**Expected Result**:
+
+- ✅ All navigation tests passing
+- ✅ URL routing verified
+
+---
+
+### Step 3.7: Run Full Test Suite
+
+**Time: 30 minutes**
+
+**Actions**:
+
+1. Start Vite dev server:
+
+   ```bash
+   npm run dev
+   ```
+
+2. In another terminal, run tests:
+
+   ```bash
+   npm run test:e2e
+   ```
+
+3. Verify all tests pass:
+
+   - No failures
+   - No timeouts
+   - All assertions pass
+
+4. Generate test report:
+   ```bash
+   npm run test:e2e
+   npx playwright show-report
+   ```
+
+**Expected Result**:
+
+- ✅ All tests passing
+- ✅ No flaky tests
+- ✅ Test report generated
+- ✅ Clear visibility into test coverage
+
+---
+
+### Step 3.8: Add Visual Regression Tests (Optional)
 
 **Time: 1 hour**
 
 **Actions**:
 
-- [ ] Add alt text to all images
-- [ ] Ensure proper heading hierarchy (h1, h2, h3)
-- [ ] Add ARIA labels to interactive elements
-- [ ] Ensure keyboard navigation works
-- [ ] Test with screen reader (optional)
-- [ ] Verify color contrast ratios (4.5:1 minimum)
+1. Add visual snapshots to key components:
 
-**Tools**:
+   - Homepage layout
+   - Recipe detail page layout
+   - Search results layout
 
-- Chrome Lighthouse
-- axe DevTools extension
-- Keyboard navigation (Tab, Enter, Space, Arrow keys)
+2. Run tests with `--update-snapshots` flag first time:
+
+   ```bash
+   npm run test:e2e -- --update-snapshots
+   ```
+
+3. Future test runs will compare against snapshots
+
+**Expected Result**:
+
+- ✅ Visual regression tests capture layouts
+- ✅ Future changes detected visually
+
+---
+
+### Step 3.9: Setup CI/CD for Tests (Optional but recommended)
+
+**Time: 1 hour**
+
+**Actions**:
+
+1. Create `.github/workflows/test.yml`:
+
+   - Runs on every push and PR
+   - Installs dependencies
+   - Starts dev server
+   - Runs Playwright tests
+   - Uploads test report as artifact
+
+2. Configure GitHub Actions to prevent merge if tests fail
+
+**Expected Result**:
+
+- ✅ Tests run automatically
+- ✅ Quality gate in place
+
+---
+
+## 🧪 Phase 4: Cross-Browser & Performance Testing (Week 3)
 
 ---
 
