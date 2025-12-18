@@ -1,9 +1,10 @@
 import { Recipe } from '@/lib/types';
-import { Clock, Users, ChefHat, X, Printer, ArrowLeft } from 'lucide-react';
+import { ProcessImage } from '@/lib/sample-recipes';
+import { Clock, Users, ChefHat, Printer, ArrowLeft, Camera } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface RecipeDetailProps {
-  recipe: Recipe;
+  recipe: Recipe & { processImages?: ProcessImage[] };
   onClose: () => void;
 }
 
@@ -166,6 +167,46 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
                 >
                   #{tag}
                 </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Cooking Process Gallery */}
+        {recipe.processImages && recipe.processImages.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-border">
+            <h2 className="font-display text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+              <span className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
+                <Camera className="w-4 h-4" />
+              </span>
+              Cooking Process
+            </h2>
+            <p className="text-muted-foreground mb-6 font-recipe">
+              Follow along with these step-by-step photos to guide your cooking journey.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {recipe.processImages.map((img, index) => (
+                <div
+                  key={img.id}
+                  className="group relative rounded-xl overflow-hidden shadow-card hover:shadow-lifted transition-all duration-300"
+                >
+                  <div className="aspect-square overflow-hidden">
+                    <img
+                      src={img.url}
+                      alt={img.caption}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-0 left-0 right-0 p-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold mb-1">
+                      {index + 1}
+                    </span>
+                    <p className="text-primary-foreground text-sm font-medium line-clamp-2">
+                      {img.caption}
+                    </p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
