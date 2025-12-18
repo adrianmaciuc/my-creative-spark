@@ -34,7 +34,7 @@ export function CategoryFilter({
       : [
           {
             id: "all",
-            name: "All Recipes",
+            name: "Toate retetele",
             slug: "all",
             emoji: defaultEmojis.all,
           },

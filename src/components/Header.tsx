@@ -29,7 +29,7 @@ export function Header({ onAddRecipe }: HeaderProps) {
           className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors shadow-soft"
         >
           <Plus className="w-4 h-4" />
-          <span className="hidden sm:inline">Add Recipe</span>
+          <span className="hidden sm:inline">Adauga Reteta</span>
         </button>
       </div>
     </header>

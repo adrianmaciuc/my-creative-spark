@@ -99,18 +99,6 @@ export function RecipeCard({
           </div>
         )}
       </div>
-
-      {/* Small "View" button that navigates to the recipe page */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          navigate(`/recipe/${encodeURIComponent(recipe.slug)}`);
-        }}
-        className="absolute left-3 bottom-3 px-3 py-1 rounded-full text-xs font-semibold bg-card/90 backdrop-blur-sm hover:bg-card transition-colors shadow-md"
-        aria-label={`Open ${recipe.title}`}
-      >
-        View
-      </button>
     </article>
   );
 }

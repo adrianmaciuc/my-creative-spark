@@ -1,4 +1,4 @@
-import { SearchBar } from './SearchBar';
+import { SearchBar } from "./SearchBar";
 
 interface HeroProps {
   onSearch: (query: string) => void;
@@ -18,22 +18,25 @@ export function Hero({ onSearch, recipeCount }: HeroProps) {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto">
           <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 text-balance">
-            Discover & Create
-            <span className="block text-primary">Delicious Recipes</span>
+            Retete delicioase
+            <span className="block text-primary">
+              Pentru iepurasi pofticiosi
+            </span>
           </h1>
           <p className="font-recipe text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto">
-            Your personal collection of culinary inspiration. From quick weeknight dinners to impressive weekend feasts.
+            Colectie de retete delicioase pentru orice ocazie
           </p>
-          
+
           <div className="flex justify-center mb-6">
-            <SearchBar 
-              onSearch={onSearch} 
-              placeholder="Search by name, ingredient, or cuisine..."
+            <SearchBar
+              onSearch={onSearch}
+              placeholder="Cauta dupa nume sau ingredient..."
             />
           </div>
 
           <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-primary">{recipeCount}</span> recipes in your collection
+            <span className="font-semibold text-primary">{recipeCount}</span>{" "}
+            {recipeCount <= 1 ? "reteta in colectie" : "retete in colectie"}
           </p>
         </div>
       </div>

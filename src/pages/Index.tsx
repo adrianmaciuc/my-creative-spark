@@ -107,7 +107,7 @@ const Index = () => {
             selected={selectedCategory}
             onSelect={setSelectedCategory}
             categories={[
-              { id: "all", name: "All Recipes", slug: "all", emoji: "🍽️" },
+              { id: "all", name: "Toate retetele", slug: "all", emoji: "🍽️" },
               ...categories,
             ]}
           />
@@ -132,7 +132,8 @@ const Index = () => {
       <footer className="bg-card border-t border-border py-8">
         <div className="container mx-auto px-4 text-center">
           <p className="text-muted-foreground text-sm">
-            Made with 💚 for food lovers everywhere
+            Creat cu 💚 de Adrian Maciuc, pentru iubitorii de mancare din
+            intreaga lume
           </p>
         </div>
       </footer>

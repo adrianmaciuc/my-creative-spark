@@ -1,7 +1,18 @@
-import { Recipe } from '@/lib/types';
-import { ProcessImage } from '@/lib/sample-recipes';
-import { Clock, Users, ChefHat, Printer, ArrowLeft, Camera } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Recipe } from "@/lib/types";
+import { ProcessImage } from "@/lib/sample-recipes";
+import { useState } from "react";
+import {
+  Clock,
+  Users,
+  ChefHat,
+  Printer,
+  ArrowLeft,
+  Camera,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface RecipeDetailProps {
   recipe: Recipe & { processImages?: ProcessImage[] };
@@ -9,13 +20,15 @@ interface RecipeDetailProps {
 }
 
 const difficultyColors = {
-  Easy: 'bg-teal-100 text-teal-700 border-teal-200',
-  Medium: 'bg-accent/20 text-accent border-accent/30',
-  Hard: 'bg-coral/20 text-coral border-coral/30',
+  Easy: "bg-teal-100 text-teal-700 border-teal-200",
+  Medium: "bg-accent/20 text-accent border-accent/30",
+  Hard: "bg-coral/20 text-coral border-coral/30",
 };
 
 export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
   const totalTime = recipe.prepTime + recipe.cookTime;
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(1);
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-background">
@@ -27,7 +40,7 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/20 to-transparent" />
-        
+
         {/* Navigation */}
         <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center">
           <button
@@ -49,10 +62,12 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
         {/* Title Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-8">
           <div className="max-w-4xl mx-auto">
-            <span className={cn(
-              'inline-block px-3 py-1 rounded-full text-sm font-semibold mb-4 border',
-              difficultyColors[recipe.difficulty]
-            )}>
+            <span
+              className={cn(
+                "inline-block px-3 py-1 rounded-full text-sm font-semibold mb-4 border",
+                difficultyColors[recipe.difficulty]
+              )}
+            >
               {recipe.difficulty}
             </span>
             <h1 className="font-display text-4xl md:text-5xl font-bold text-primary-foreground mb-4 text-balance">
@@ -73,22 +88,28 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
             <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mx-auto mb-2">
               <Clock className="w-6 h-6 text-primary" />
             </div>
-            <p className="text-2xl font-display font-bold text-foreground">{totalTime}</p>
-            <p className="text-sm text-muted-foreground">minutes total</p>
+            <p className="text-2xl font-display font-bold text-foreground">
+              {totalTime}
+            </p>
+            <p className="text-sm text-muted-foreground">minute in total</p>
           </div>
           <div className="text-center border-x border-border">
             <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mx-auto mb-2">
               <Users className="w-6 h-6 text-primary" />
             </div>
-            <p className="text-2xl font-display font-bold text-foreground">{recipe.servings}</p>
-            <p className="text-sm text-muted-foreground">servings</p>
+            <p className="text-2xl font-display font-bold text-foreground">
+              {recipe.servings}
+            </p>
+            <p className="text-sm text-muted-foreground">portii</p>
           </div>
           <div className="text-center">
             <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mx-auto mb-2">
               <ChefHat className="w-6 h-6 text-primary" />
             </div>
-            <p className="text-2xl font-display font-bold text-foreground">{recipe.ingredients.length}</p>
-            <p className="text-sm text-muted-foreground">ingredients</p>
+            <p className="text-2xl font-display font-bold text-foreground">
+              {recipe.ingredients.length}
+            </p>
+            <p className="text-sm text-muted-foreground">ingrediente</p>
           </div>
         </div>
 
@@ -100,7 +121,7 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
                 <span className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm">
                   🥗
                 </span>
-                Ingredients
+                ingrediente
               </h2>
               <ul className="space-y-3">
                 {recipe.ingredients.map((ingredient) => (
@@ -110,11 +131,21 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
                   >
                     <span className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
                     <span>
-                      <strong className="text-primary">{ingredient.quantity}</strong>
-                      {ingredient.unit && <span className="text-muted-foreground"> {ingredient.unit}</span>}
-                      {' '}{ingredient.item}
+                      <strong className="text-primary">
+                        {ingredient.quantity}
+                      </strong>
+                      {ingredient.unit && (
+                        <span className="text-muted-foreground">
+                          {" "}
+                          {ingredient.unit}
+                        </span>
+                      )}{" "}
+                      {ingredient.item}
                       {ingredient.notes && (
-                        <span className="text-muted-foreground italic"> ({ingredient.notes})</span>
+                        <span className="text-muted-foreground italic">
+                          {" "}
+                          ({ingredient.notes})
+                        </span>
                       )}
                     </span>
                   </li>
@@ -129,7 +160,7 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
               <span className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-accent-foreground text-sm">
                 📝
               </span>
-              Instructions
+              Instructiuni
             </h2>
             <ol className="space-y-6">
               {recipe.instructions.map((instruction) => (
@@ -144,7 +175,8 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
                     {instruction.tips && (
                       <div className="mt-3 p-4 bg-secondary rounded-lg border-l-4 border-primary">
                         <p className="text-sm text-secondary-foreground">
-                          <span className="font-semibold">💡 Tip:</span> {instruction.tips}
+                          <span className="font-semibold">💡 Tip:</span>{" "}
+                          {instruction.tips}
                         </p>
                       </div>
                     )}
@@ -158,7 +190,9 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
         {/* Tags */}
         {recipe.tags.length > 0 && (
           <div className="mt-12 pt-8 border-t border-border">
-            <h3 className="font-display text-lg font-semibold text-foreground mb-4">Tags</h3>
+            <h3 className="font-display text-lg font-semibold text-foreground mb-4">
+              Tags
+            </h3>
             <div className="flex flex-wrap gap-2">
               {recipe.tags.map((tag) => (
                 <span
@@ -172,42 +206,95 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
           </div>
         )}
 
-        {/* Cooking Process Gallery */}
-        {recipe.processImages && recipe.processImages.length > 0 && (
+        {/* Gallery */}
+        {recipe.galleryImages && recipe.galleryImages.length > 0 && (
           <div className="mt-12 pt-8 border-t border-border">
             <h2 className="font-display text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
               <span className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
                 <Camera className="w-4 h-4" />
               </span>
-              Cooking Process
+              Galerie
             </h2>
-            <p className="text-muted-foreground mb-6 font-recipe">
-              Follow along with these step-by-step photos to guide your cooking journey.
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {recipe.processImages.map((img, index) => (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {recipe.galleryImages.map((img, index) => (
                 <div
-                  key={img.id}
-                  className="group relative rounded-xl overflow-hidden shadow-card hover:shadow-lifted transition-all duration-300"
+                  key={index}
+                  className="group relative rounded-xl overflow-hidden shadow-card hover:shadow-lifted transition-all duration-300 cursor-pointer"
+                  onClick={() => setSelectedImage(img)}
                 >
                   <div className="aspect-square overflow-hidden">
                     <img
-                      src={img.url}
-                      alt={img.caption}
+                      src={img}
+                      alt={`Gallery ${index + 1}`}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute bottom-0 left-0 right-0 p-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold mb-1">
-                      {index + 1}
-                    </span>
-                    <p className="text-primary-foreground text-sm font-medium line-clamp-2">
-                      {img.caption}
-                    </p>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <ZoomIn className="w-8 h-8 text-primary-foreground" />
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Image Lightbox Modal */}
+        {selectedImage && (
+          <div
+            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+            onClick={() => setSelectedImage(null)}
+          >
+            <div
+              className="relative max-w-4xl max-h-[90vh] flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors z-10"
+                aria-label="Close lightbox"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              {/* Zoom Controls */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                <button
+                  onClick={() => setZoom(Math.max(1, zoom - 0.2))}
+                  className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors disabled:opacity-50"
+                  disabled={zoom <= 1}
+                  aria-label="Zoom out"
+                >
+                  <ZoomOut className="w-5 h-5" />
+                </button>
+                <div className="px-4 py-2 bg-black/50 rounded-full text-white text-sm flex items-center">
+                  {Math.round(zoom * 100)}%
+                </div>
+                <button
+                  onClick={() => setZoom(Math.min(3, zoom + 0.2))}
+                  className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors disabled:opacity-50"
+                  disabled={zoom >= 3}
+                  aria-label="Zoom in"
+                >
+                  <ZoomIn className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Image */}
+              <div
+                className="overflow-auto max-h-[80vh] flex items-center justify-center"
+                style={{
+                  transform: `scale(${zoom})`,
+                  transition: "transform 0.2s ease-out",
+                }}
+              >
+                <img
+                  src={selectedImage}
+                  alt="Lightbox"
+                  className="max-w-full max-h-[80vh] object-contain"
+                />
+              </div>
             </div>
           </div>
         )}
