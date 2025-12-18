@@ -1,6 +1,12 @@
 import { Recipe } from './types';
 
-export const sampleRecipes: Recipe[] = [
+export interface ProcessImage {
+  id: string;
+  url: string;
+  caption: string;
+}
+
+export const sampleRecipes: (Recipe & { processImages?: ProcessImage[] })[] = [
   {
     id: '1',
     slug: 'classic-margherita-pizza',
@@ -29,6 +35,13 @@ export const sampleRecipes: Recipe[] = [
     difficulty: 'Medium',
     categories: [{ id: '1', name: 'Italian', slug: 'italian' }, { id: '2', name: 'Main Course', slug: 'main-course' }],
     tags: ['pizza', 'vegetarian', 'italian', 'classic'],
+    processImages: [
+      { id: '1', url: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&q=80', caption: 'Kneading the pizza dough' },
+      { id: '2', url: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=80', caption: 'Rolling out the dough' },
+      { id: '3', url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80', caption: 'Adding fresh toppings' },
+      { id: '4', url: 'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=600&q=80', caption: 'Ready for the oven' },
+      { id: '5', url: 'https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=600&q=80', caption: 'Golden and bubbling' },
+    ],
   },
   {
     id: '2',
@@ -59,6 +72,13 @@ export const sampleRecipes: Recipe[] = [
     difficulty: 'Easy',
     categories: [{ id: '3', name: 'Seafood', slug: 'seafood' }, { id: '2', name: 'Main Course', slug: 'main-course' }],
     tags: ['salmon', 'seafood', 'quick', 'healthy', 'glaze'],
+    processImages: [
+      { id: '1', url: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&q=80', caption: 'Fresh salmon fillets' },
+      { id: '2', url: 'https://images.unsplash.com/photo-1485921325833-c519f76c4927?w=600&q=80', caption: 'Preparing the honey garlic glaze' },
+      { id: '3', url: 'https://images.unsplash.com/photo-1580476262798-bddd9f4b7369?w=600&q=80', caption: 'Searing the salmon' },
+      { id: '4', url: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&q=80', caption: 'Glazing with sauce' },
+      { id: '5', url: 'https://images.unsplash.com/photo-1485963631004-f2f00b1d6571?w=600&q=80', caption: 'Ready to serve' },
+    ],
   },
   {
     id: '3',
@@ -90,6 +110,13 @@ export const sampleRecipes: Recipe[] = [
     difficulty: 'Medium',
     categories: [{ id: '4', name: 'Thai', slug: 'thai' }, { id: '2', name: 'Main Course', slug: 'main-course' }],
     tags: ['curry', 'thai', 'spicy', 'coconut', 'chicken'],
+    processImages: [
+      { id: '1', url: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=600&q=80', caption: 'Fresh Thai ingredients' },
+      { id: '2', url: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?w=600&q=80', caption: 'Making the curry paste' },
+      { id: '3', url: 'https://images.unsplash.com/photo-1569058242567-93de6f36f8eb?w=600&q=80', caption: 'Cooking the aromatics' },
+      { id: '4', url: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=600&q=80', caption: 'Simmering with coconut milk' },
+      { id: '5', url: 'https://images.unsplash.com/photo-1562565652-a0d8f0c59eb4?w=600&q=80', caption: 'Adding fresh Thai basil' },
+    ],
   },
   {
     id: '4',
@@ -120,6 +147,13 @@ export const sampleRecipes: Recipe[] = [
     difficulty: 'Hard',
     categories: [{ id: '5', name: 'Desserts', slug: 'desserts' }, { id: '6', name: 'French', slug: 'french' }],
     tags: ['chocolate', 'dessert', 'indulgent', 'baking'],
+    processImages: [
+      { id: '1', url: 'https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=600&q=80', caption: 'Melting dark chocolate' },
+      { id: '2', url: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600&q=80', caption: 'Whisking the eggs' },
+      { id: '3', url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&q=80', caption: 'Folding the batter' },
+      { id: '4', url: 'https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?w=600&q=80', caption: 'Filling the ramekins' },
+      { id: '5', url: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=600&q=80', caption: 'The molten center reveal' },
+    ],
   },
   {
     id: '5',
@@ -152,6 +186,13 @@ export const sampleRecipes: Recipe[] = [
     difficulty: 'Easy',
     categories: [{ id: '7', name: 'Mediterranean', slug: 'mediterranean' }, { id: '8', name: 'Healthy', slug: 'healthy' }],
     tags: ['quinoa', 'vegetarian', 'healthy', 'meal-prep', 'mediterranean'],
+    processImages: [
+      { id: '1', url: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&q=80', caption: 'Fresh Mediterranean ingredients' },
+      { id: '2', url: 'https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=600&q=80', caption: 'Cooking fluffy quinoa' },
+      { id: '3', url: 'https://images.unsplash.com/photo-1623428187969-5da2dbe3a647?w=600&q=80', caption: 'Roasting the chickpeas' },
+      { id: '4', url: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&q=80', caption: 'Preparing fresh vegetables' },
+      { id: '5', url: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80', caption: 'Assembling the bowl' },
+    ],
   },
   {
     id: '6',
@@ -183,5 +224,12 @@ export const sampleRecipes: Recipe[] = [
     difficulty: 'Hard',
     categories: [{ id: '9', name: 'Japanese', slug: 'japanese' }, { id: '2', name: 'Main Course', slug: 'main-course' }],
     tags: ['ramen', 'japanese', 'soup', 'comfort-food'],
+    processImages: [
+      { id: '1', url: 'https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=600&q=80', caption: 'Preparing fresh ramen noodles' },
+      { id: '2', url: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&q=80', caption: 'Simmering the rich broth' },
+      { id: '3', url: 'https://images.unsplash.com/photo-1591814468924-caf88d1232e1?w=600&q=80', caption: 'Marinating the soft-boiled eggs' },
+      { id: '4', url: 'https://images.unsplash.com/photo-1623341214825-9f4f963727da?w=600&q=80', caption: 'Slicing the chashu pork' },
+      { id: '5', url: 'https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=600&q=80', caption: 'Assembling the perfect bowl' },
+    ],
   },
 ];
