@@ -1,6 +1,7 @@
-import { Recipe } from '@/lib/types';
-import { Clock, Users, ChefHat } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useNavigate } from "react-router-dom";
+import { Recipe } from "@/lib/types";
+import { Clock, Users, ChefHat } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -10,23 +11,30 @@ interface RecipeCardProps {
 }
 
 const difficultyColors = {
-  Easy: 'bg-teal-100 text-teal-700',
-  Medium: 'bg-accent/20 text-accent',
-  Hard: 'bg-coral/20 text-coral',
+  Easy: "bg-teal-100 text-teal-700",
+  Medium: "bg-accent/20 text-accent",
+  Hard: "bg-coral/20 text-coral",
 };
 
-export function RecipeCard({ recipe, onClick, className, style }: RecipeCardProps) {
+export function RecipeCard({
+  recipe,
+  onClick,
+  className,
+  style,
+}: RecipeCardProps) {
   const totalTime = recipe.prepTime + recipe.cookTime;
+
+  const navigate = useNavigate();
 
   return (
     <article
       onClick={onClick}
       style={style}
       className={cn(
-        'group relative bg-card rounded-xl overflow-hidden cursor-pointer',
-        'shadow-card hover:shadow-lifted',
-        'transform transition-all duration-300 ease-out',
-        'hover:-translate-y-2',
+        "group relative bg-card rounded-xl overflow-hidden cursor-pointer",
+        "shadow-card hover:shadow-lifted",
+        "transform transition-all duration-300 ease-out",
+        "hover:-translate-y-2",
         className
       )}
     >
@@ -38,13 +46,15 @@ export function RecipeCard({ recipe, onClick, className, style }: RecipeCardProp
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
+
         {/* Difficulty Badge */}
-        <span className={cn(
-          'absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold',
-          'backdrop-blur-sm shadow-sm',
-          difficultyColors[recipe.difficulty]
-        )}>
+        <span
+          className={cn(
+            "absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold",
+            "backdrop-blur-sm shadow-sm",
+            difficultyColors[recipe.difficulty]
+          )}
+        >
           {recipe.difficulty}
         </span>
       </div>
@@ -54,7 +64,7 @@ export function RecipeCard({ recipe, onClick, className, style }: RecipeCardProp
         <h3 className="font-display text-lg font-semibold text-card-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
           {recipe.title}
         </h3>
-        
+
         <p className="text-muted-foreground text-sm line-clamp-2 mb-4 font-recipe">
           {recipe.description}
         </p>
@@ -89,6 +99,18 @@ export function RecipeCard({ recipe, onClick, className, style }: RecipeCardProp
           </div>
         )}
       </div>
+
+      {/* Small "View" button that navigates to the recipe page */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate(`/recipe/${encodeURIComponent(recipe.slug)}`);
+        }}
+        className="absolute left-3 bottom-3 px-3 py-1 rounded-full text-xs font-semibold bg-card/90 backdrop-blur-sm hover:bg-card transition-colors shadow-md"
+        aria-label={`Open ${recipe.title}`}
+      >
+        View
+      </button>
     </article>
   );
 }
