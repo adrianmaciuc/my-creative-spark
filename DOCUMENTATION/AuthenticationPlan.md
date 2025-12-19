@@ -1,17 +1,19 @@
 # Authentication & User Roles Implementation Plan
 
-**Recipe App User & Cook Authentication System**
+**Recipe App User & Chef Authentication System**
 
 ---
 
 ## � Progress Overview
 
-**Phase 1: Database & Backend** ❌ Not Started
+**Phase 1: Database & Backend** 🔄 In Progress
 
-- Configure User fields (role, avatar, bio, newsletter)
-- Create Favorites collection
-- Add Recipe author field
-- Configure API permissions
+- Configure User fields (avatar, bio, newsletter) ✅
+- Create Favorites collection ✅
+- Add Recipe author field ✅
+- Configure API permissions ✅
+- Create sample users via Admin ❌ Blocked (403 on role fetch)
+- Assign author to recipes 🔜 Pending
 
 **Phase 2: Frontend Auth Infrastructure** ✅ Complete
 
@@ -27,12 +29,12 @@
 - Header auth state (login button, user dropdown)
 - Favorites feature with toast CTA
 
-**Phase 4: Cook Features** 🔄 In Progress
+**Phase 4: Chef Features** 🔄 In Progress
 
-- Cook Dashboard → Not started
+- Chef Dashboard → Not started
 - Recipe Editor → Not started
 - Recipe Preview → Not started
-- Cook header features → Not started
+- Chef header features → Not started
 
 **Phase 5: Technical Details** ✅ Complete
 
@@ -53,7 +55,7 @@
 Implement role-based authentication with two user types:
 
 - **User**: Can browse recipes, favorite them, subscribe to newsletter, manage profile
-- **Cook**: Can manage recipes (CRUD), moderate content, access recipe dashboard
+- **Chef**: Can manage recipes (CRUD), moderate content, access recipe dashboard
 
 **Stack**: Strapi JWT auth + React Context + localStorage
 
@@ -64,9 +66,9 @@ Implement role-based authentication with two user types:
 ### Authentication Flow
 
 ```
-User/Cook Registration
+User/Chef Registration
         ↓
-Choose Role (User/Cook)
+Choose Role (User/Chef)
         ↓
 POST /api/auth/local/register
         ↓
@@ -79,18 +81,51 @@ Protected routes check role and redirect if needed
 
 ### Role Permissions
 
-| Feature           | User | Cook |
-| ----------------- | ---- | ---- |
-| View Recipes      | ✅   | ✅   |
-| Favorite Recipes  | ✅   | ✅   |
-| View Favorites    | ✅   | ✅   |
-| Newsletter Signup | ✅   | ✅   |
-| Add Recipes       | ❌   | ✅   |
-| Edit Recipes      | ❌   | ✅   |
-| Delete Recipes    | ❌   | ✅   |
-| Create Tags       | ❌   | ✅   |
-| Manage Categories | ❌   | ✅   |
-| Access CMS UI     | ❌   | ✅   |
+| Feature            | User | Chef |
+| ------------------ | ---- | ---- |
+| View Recipes       | ✅   | ✅   |
+| Favorite Recipes   | ✅   | ✅   |
+| View Favorites     | ✅   | ✅   |
+| Newsletter Signup  | ✅   | ✅   |
+| Add Recipes        | ❌   | ✅   |
+| Edit All Recipes   | ❌   | ✅   |
+| Delete All Recipes | ❌   | ✅   |
+| Create Tags        | ❌   | ✅   |
+| Manage Categories  | ❌   | ✅   |
+| Access CMS UI      | ❌   | ✅   |
+
+---
+
+## 🛠️ Troubleshooting
+
+### 403 Forbidden when assigning roles in Strapi Admin (even as Super Admin)
+
+- Symptom: Admin header shows "Super Admin", but opening the Role field in Content Manager → Users triggers a 403 when Strapi tries to fetch roles.
+
+  - Network example: GET /content-manager/collection-types/plugin::users-permissions.role/{id}? → 403 (Forbidden), sometimes with "policy failed".
+
+- Repro:
+
+  - Content Manager → Users (Users & Permissions) → Create new → open Role dropdown → request fails with 403.
+
+- Already tried (still reproduces):
+
+  - Full browser cache + cookies clear for localhost:1337/admin; fully close and reopen browser.
+  - Kill process on port 1337 and restart Strapi.
+  - Clear Strapi caches and restart from backend folder:
+    - cd backend && rm -rf .cache build && npm run dev
+  - Logout and login with the original Super Admin created at first boot.
+
+- Next checks and potential fixes:
+
+  - Verify Admin Panel role: Settings → Administration Panel → Users → ensure your admin user is truly "Super Admin".
+  - Settings → Administration Panel → Roles: confirm default "Super Admin" role exists and is intact.
+  - Watch server logs during the 403 to see which policy rejects the request (distinguish Admin vs Content API permission issues).
+  - Create a fresh Super Admin to rule out a corrupted admin account:
+    - cd backend && npm run strapi admin:create-user
+  - Try a different browser profile (eliminate extension/cookie interference).
+
+- Status: Issue remains after cache clears + restart; recorded here to revisit alongside StrapiConfigurationGuide Step 7.9.
 
 ---
 
@@ -116,7 +151,7 @@ Protected routes check role and redirect if needed
 4. Configuration:
    - Add these values:
      - `user` (default)
-     - `cook`
+     - `chef`
    - **Default value**: `user`
    - Go to **Advanced settings** tab
    - Check **"Required field"**
@@ -242,7 +277,7 @@ Protected routes check role and redirect if needed
 
 **Status**: ❌ Not started
 
-**Purpose**: Track which cook created each recipe
+**Purpose**: Track which chef created each recipe
 
 **Actions**:
 
@@ -268,7 +303,7 @@ Protected routes check role and redirect if needed
 **Expected Result**:
 
 - ✅ Recipe has author field
-- ✅ Cooks can see only their recipes in dashboard
+- ✅ Chefs can see only their recipes in dashboard
 - ✅ Can filter recipes by author
 
 ---
@@ -327,7 +362,7 @@ Click **Save**
 
 - ✅ `find` - List recipes
 - ✅ `findOne` - View single recipe
-- ❌ `create`, `update`, `delete` - Disabled (only for cooks)
+- ❌ `create`, `update`, `delete` - Disabled (only for chefs)
 
 **Category**:
 
@@ -353,13 +388,13 @@ Click **Save**
 
 ---
 
-#### 3. Create Cook Role
+#### 3. Create Chef Role
 
 **Path**: Settings → Roles → Create new role
 
 1. Click **"Add new role"** button
-2. **Name**: `Cook`
-3. **Description**: `Role for recipe creators with CRUD access`
+2. **Name**: `Chef`
+3. **Description**: `Role for recipe creators with full recipe management access`
 4. Click **Save**
 
 **Enable these permissions**:
@@ -373,18 +408,18 @@ Click **Save**
 - ✅ `find` - List all recipes
 - ✅ `findOne` - View single recipe
 - ✅ `create` - Create recipes
-- ✅ `update` - Edit recipes (configure policy: only author can edit)
-- ✅ `delete` - Delete recipes (configure policy: only author can delete)
+- ✅ `update` - Edit all recipes (no author restriction)
+- ✅ `delete` - Delete all recipes (no author restriction)
 
 **Category**:
 
 - ✅ `find` - List categories
 - ✅ `findOne` - View single category
-- ⚠️ `create`, `update`, `delete` - Optional (decide if cooks can manage categories)
+- ⚠️ `create`, `update`, `delete` - Optional (decide if chefs can manage categories)
 
 **Favorite**:
 
-- ✅ All enabled (cooks can also favorite recipes)
+- ✅ All enabled (chefs can also favorite recipes)
 
 **User**:
 
@@ -396,33 +431,11 @@ Click **Save**
 
 ---
 
-#### 4. Configure Update Policies (Advanced)
+#### 4. No Custom Policies Required
 
-For **Recipe** `update` and `delete` actions in Cook role:
+**Status**: ✅ Not needed
 
-1. Go to Settings → Roles → Cook → Recipe
-2. Click the gear icon next to `update`
-3. Add custom policy to ensure user can only edit their own recipes:
-
-```javascript
-// Policy: isRecipeAuthor
-module.exports = async (policyContext, config, { strapi }) => {
-  const { id } = policyContext.params;
-  const userId = policyContext.state.user.id;
-
-  const recipe = await strapi.entityService.findOne("api::recipe.recipe", id, {
-    populate: ["author"],
-  });
-
-  if (!recipe) {
-    return false;
-  }
-
-  return recipe.author?.id === userId;
-};
-```
-
-Repeat for `delete` action.
+Since chefs can edit and delete all recipes (not just their own), no custom policies are required. The default Strapi permissions are sufficient.
 
 ---
 
@@ -434,8 +447,8 @@ Repeat for `delete` action.
 - ✅ Public can register and login
 - ✅ Authenticated users can favorite recipes
 - ✅ Authenticated users can update own profile
-- ✅ Cooks can create/edit/delete own recipes
-- ✅ Policies prevent unauthorized recipe modifications
+- ✅ Chefs can create/edit/delete ALL recipes (no author restriction)
+- ✅ Only superuser can manage categories
 
 ---
 
@@ -454,7 +467,7 @@ interface User {
   id: string;
   username: string;
   email: string;
-  role: "user" | "cook";
+  role: "user" | "chef";
   avatar: string;
   newsletterSubscribed: boolean;
 }
@@ -468,11 +481,11 @@ interface AuthContextType {
     email: string,
     username: string,
     password: string,
-    role: "user" | "cook"
+    role: "user" | "chef"
   ) => Promise<void>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
-  isCook: boolean;
+  isChef: boolean;
 }
 
 // Provider component that:
@@ -525,7 +538,7 @@ export const useAuth = () => {
 ```typescript
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: "user" | "cook";
+  requiredRole?: "user" | "chef";
 }
 
 // Component that:
@@ -610,7 +623,7 @@ export const authAPI = {
 - [ ] Username input
 - [ ] Password input (with strength indicator)
 - [ ] Confirm password input
-- [ ] Role selection: "User" or "Cook" buttons/radio
+- [ ] Role selection: "User" or "Chef" buttons/radio
 - [ ] Terms & conditions checkbox
 - [ ] Register button
 - [ ] Error handling
@@ -621,7 +634,7 @@ export const authAPI = {
 
 ```
 Choose Your Role:
-[User Card]     [Cook Card]
+[User Card]     [Chef Card]
 - Browse        - Manage recipes
 - Favorite      - Create content
 - Newsletter    - CMS access
@@ -748,7 +761,7 @@ Header with logo + "Add Recipe" button
 After:
 Header with:
 ├─ Logo (left)
-├─ Add Recipe button (center, only for cooks)
+├─ Add Recipe button (center, only for chefs)
 └─ Auth Section (right)
    ├─ If logged out: Login | Register buttons
    └─ If logged in:
@@ -757,7 +770,7 @@ Header with:
       ├─ Dropdown menu:
          ├─ Profile
          ├─ Settings
-         ├─ [Cook Dashboard] (cooks only)
+         ├─ [Chef Dashboard] (chefs only)
          └─ Logout
 ```
 
@@ -765,7 +778,7 @@ Header with:
 
 - ✅ Auth state reflected in header
 - ✅ Easy access to profile/logout
-- ✅ Cook features hidden from users
+- ✅ Chef features hidden from users
 
 ---
 
@@ -816,13 +829,13 @@ Color: Turquoise on hover, Red when favorited
 
 ---
 
-## 👨‍🍳 Phase 4: Cook Content Management UI
+## 👨‍🍳 Phase 4: Chef Content Management UI
 
-### Step 4.1: Create Cook Dashboard
+### Step 4.1: Create Chef Dashboard
 
 **Status**: 🔄 In Progress
 
-**File**: `src/pages/CookDashboard.tsx`
+**File**: `src/pages/ChefDashboard.tsx`
 
 **Layout**:
 
@@ -845,7 +858,7 @@ Color: Turquoise on hover, Red when favorited
 
 **Features**:
 
-- [ ] Table view of all recipes created by this cook
+- [ ] Table view of all recipes created by this chef
 - [ ] Search recipes by title
 - [ ] Filter by category
 - [ ] Filter by difficulty
@@ -858,7 +871,7 @@ Color: Turquoise on hover, Red when favorited
 
 **Expected Result**:
 
-- ✅ Cooks can see all their recipes
+- ✅ Chefs can see all their recipes
 - ✅ Easy to manage content
 - ✅ Better UX than Strapi admin
 
@@ -926,7 +939,7 @@ Color: Turquoise on hover, Red when favorited
 
 - [ ] Title: required, min 3 chars, max 200 chars
 - [ ] Description: required, max 500 chars
-- [ ] Prep/cook time: required, min 0
+- [ ] Prep/chef time: required, min 0
 - [ ] Servings: required, min 1
 - [ ] At least 1 ingredient required
 - [ ] At least 1 instruction required
@@ -934,7 +947,7 @@ Color: Turquoise on hover, Red when favorited
 
 **Smart Features**:
 
-- [ ] Auto-calculate total time (prep + cook)
+- [ ] Auto-calculate total time (prep + chef)
 - [ ] Auto-generate slug from title
 - [ ] Image drag-and-drop upload
 - [ ] Ingredient quantity validation (numbers)
@@ -943,7 +956,7 @@ Color: Turquoise on hover, Red when favorited
 
 **Expected Result**:
 
-- ✅ Cooks can create recipes easily
+- ✅ Chefs can create recipes easily
 - ✅ All Strapi fields editable
 - ✅ Validation prevents bad data
 - ✅ Better UX than Strapi admin
@@ -968,7 +981,7 @@ Color: Turquoise on hover, Red when favorited
 
 **Expected Result**:
 
-- ✅ Cooks can see final result
+- ✅ Chefs can see final result
 - ✅ Catch issues before publishing
 - ✅ Professional workflow
 
@@ -980,7 +993,7 @@ Color: Turquoise on hover, Red when favorited
 
 **File**: `src/pages/CategoryManagement.tsx`
 
-**Features** (if cook can manage categories):
+**Features** (if chef can manage categories):
 
 - [ ] List all categories
 - [ ] Add new category
@@ -988,7 +1001,7 @@ Color: Turquoise on hover, Red when favorited
 - [ ] Delete category
 - [ ] Assign color to category
 
-**If not allowing cook to manage**: Remove this step, categories only managed by admin
+**If not allowing chef to manage**: Remove this step, categories only managed by admin
 
 **Expected Result**:
 
@@ -996,16 +1009,16 @@ Color: Turquoise on hover, Red when favorited
 
 ---
 
-### Step 4.5: Add Cook Features to Header
+### Step 4.5: Add Chef Features to Header
 
 **Status**: ❌ Not started
 
 **File**: `src/components/Header.tsx` (modify)
 
-**Changes for Cook Users**:
+**Changes for Chef Users**:
 
 ```
-Header (cook view):
+Header (chef view):
 ├─ Logo (left)
 ├─ + Add New Recipe button (prominent, center-left)
 ├─ Dashboard link (center)
@@ -1020,7 +1033,7 @@ Header (cook view):
 
 **Expected Result**:
 
-- ✅ Cook-specific features visible
+- ✅ Chef-specific features visible
 - ✅ Easy access to content management
 
 ---
@@ -1257,7 +1270,7 @@ This section summarizes the complete database schema after implementing all auth
 | username             | String       | ✅       | -       | Unique              |
 | email                | String       | ✅       | -       | Unique              |
 | password             | String       | ✅       | -       | Hashed              |
-| role                 | Enum         | ✅       | `user`  | `user` or `cook`    |
+| role                 | Enum         | ✅       | `user`  | `user` or `chef`    |
 | avatar               | String (URL) | ❌       | `null`  | DiceBear URL        |
 | newsletterSubscribed | Boolean      | ❌       | `false` | Subscription status |
 | bio                  | Text (Long)  | ❌       | `null`  | User biography      |
@@ -1331,7 +1344,7 @@ This section summarizes the complete database schema after implementing all auth
 
 | Field Name | Type     | Required | Notes                         |
 | ---------- | -------- | -------- | ----------------------------- |
-| author     | Relation | ❌       | Many-to-One with User (cook)  |
+| author     | Relation | ❌       | Many-to-One with User (chef)  |
 | published  | Boolean  | ❌       | Default: `true`, draft status |
 
 **Relations**:
@@ -1423,7 +1436,7 @@ This section summarizes the complete database schema after implementing all auth
 
 ### API Permissions Matrix
 
-| Endpoint                      | Public | Authenticated | Cook     |
+| Endpoint                      | Public | Authenticated | Chef     |
 | ----------------------------- | ------ | ------------- | -------- |
 | **Auth**                      |
 | POST /api/auth/local/register | ✅     | ✅            | ✅       |
@@ -1435,8 +1448,8 @@ This section summarizes the complete database schema after implementing all auth
 | GET /api/recipes              | ✅     | ✅            | ✅       |
 | GET /api/recipes/:id          | ✅     | ✅            | ✅       |
 | POST /api/recipes             | ❌     | ❌            | ✅       |
-| PUT /api/recipes/:id          | ❌     | ❌            | ✅ (own) |
-| DELETE /api/recipes/:id       | ❌     | ❌            | ✅ (own) |
+| PUT /api/recipes/:id          | ❌     | ❌            | ✅ (all) |
+| DELETE /api/recipes/:id       | ❌     | ❌            | ✅ (all) |
 | **Categories**                |
 | GET /api/categories           | ✅     | ✅            | ✅       |
 | GET /api/categories/:id       | ✅     | ✅            | ✅       |
@@ -1517,14 +1530,14 @@ See [PostgresqlMigrationGuide.md](./PostgresqlMigrationGuide.md) for complete mi
 - [ ] Add heart icons to recipes
 - [ ] Test user registration and login flow
 
-### Phase 4: Cook Features
+### Phase 4: Chef Features
 
-- [ ] Create Cook Dashboard page
+- [ ] Create Chef Dashboard page
 - [ ] Create Recipe Editor form
 - [ ] Create Recipe Preview component
-- [ ] Add cook-specific header features
+- [ ] Add chef-specific header features
 - [ ] Test recipe creation/editing/deletion
-- [ ] Test cook-only access control
+- [ ] Test chef-only access control
 
 ### Phase 5: Polish & Testing
 
@@ -1533,7 +1546,7 @@ See [PostgresqlMigrationGuide.md](./PostgresqlMigrationGuide.md) for complete mi
 - [ ] Form validation and feedback
 - [ ] Test logout functionality
 - [ ] Test token expiration
-- [ ] Test role-based access (try accessing cook features as user)
+- [ ] Test role-based access (try accessing chef features as user)
 - [ ] Responsive design on all pages
 - [ ] Cross-browser testing
 
@@ -1567,7 +1580,7 @@ src/
 │   ├── Login.tsx
 │   ├── Register.tsx
 │   ├── UserProfile.tsx
-│   ├── CookDashboard.tsx
+│   ├── ChefDashboard.tsx
 │   └── RecipeEditor.tsx
 └── lib/
     ├── auth.ts (new)
@@ -1589,14 +1602,14 @@ src/
 - Users can see their favorite recipes
 - Logout works properly
 
-✅ **Cook Experience**:
+✅ **Chef Experience**:
 
-- Cooks can access dashboard
-- Cooks can create recipes (full form)
-- Cooks can edit recipes
-- Cooks can delete recipes
-- Cooks see only their recipes in dashboard
-- Cook features hidden from regular users
+- Chefs can access dashboard
+- Chefs can create recipes (full form)
+- Chefs can edit recipes
+- Chefs can delete recipes
+- Chefs see only their recipes in dashboard
+- Chef features hidden from regular users
 - No need to access Strapi admin
 
 ✅ **Security**:
@@ -1624,7 +1637,7 @@ src/
 1. **Week 1**: Strapi backend setup + Auth context
 2. **Week 2**: Login/Register pages + JWT management
 3. **Week 3**: User profile + favorites feature
-4. **Week 4**: Cook dashboard + recipe editor
+4. **Week 4**: Chef dashboard + recipe editor
 5. **Week 5**: Polish, testing, deployment
 
 ---
