@@ -11,8 +11,13 @@ import {
   X,
   ZoomIn,
   ZoomOut,
+  Heart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useFavorites } from "@/hooks/useFavorites";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface RecipeDetailProps {
   recipe: Recipe & { processImages?: ProcessImage[] };
@@ -29,6 +34,37 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
   const totalTime = recipe.prepTime + recipe.cookTime;
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
+  const { isAuthenticated } = useAuth();
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const navigate = useNavigate();
+
+  const handleFavoriteClick = async () => {
+    if (!isAuthenticated) {
+      toast.error("Pentru a favoriza retetele, creaza un cont", {
+        description:
+          "Alatura-te comunitatii noastre pentru a salva retetele preferate",
+        action: {
+          label: "Autentificare",
+          onClick: () => navigate("/login"),
+        },
+        duration: 7000,
+        className: "text-base md:text-lg font-medium flex flex-col gap-3",
+        icon: null,
+        style: {
+          padding: "20px",
+        },
+      });
+      return;
+    }
+
+    try {
+      await toggleFavorite(recipe.id);
+    } catch (error) {
+      toast.error("Failed to update favorite");
+    }
+  };
+
+  const isFav = isFavorite(recipe.id);
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-background">
@@ -50,13 +86,29 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
             <ArrowLeft className="w-4 h-4" />
             <span className="font-medium">Back</span>
           </button>
-          <button
-            onClick={() => window.print()}
-            className="p-3 bg-card/90 backdrop-blur-sm rounded-full text-foreground hover:bg-card transition-colors shadow-lg"
-            aria-label="Print recipe"
-          >
-            <Printer className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleFavoriteClick}
+              className="p-3 bg-card/90 backdrop-blur-sm rounded-full text-foreground hover:bg-card transition-colors shadow-lg"
+              aria-label="Toggle favorite"
+            >
+              <Heart
+                className={cn(
+                  "w-5 h-5 transition-all duration-200",
+                  isFav
+                    ? "fill-red-500 text-red-500"
+                    : "text-foreground hover:text-red-500"
+                )}
+              />
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="p-3 bg-card/90 backdrop-blur-sm rounded-full text-foreground hover:bg-card transition-colors shadow-lg"
+              aria-label="Print recipe"
+            >
+              <Printer className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Title Overlay */}
@@ -83,7 +135,7 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 py-8 -mt-8 relative">
         {/* Quick Info Card */}
-        <div className="bg-card rounded-2xl shadow-card p-6 mb-8 grid grid-cols-3 gap-4">
+        <div className="bg-card rounded-2xl shadow-card p-6 mb-8 grid grid-cols-4 gap-4">
           <div className="text-center">
             <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mx-auto mb-2">
               <Clock className="w-6 h-6 text-primary" />
@@ -110,6 +162,29 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
               {recipe.ingredients.length}
             </p>
             <p className="text-sm text-muted-foreground">ingrediente</p>
+          </div>
+          <div className="text-center border-l border-border">
+            <button
+              onClick={handleFavoriteClick}
+              className="w-full h-full flex flex-col items-center justify-center hover:opacity-80 transition-opacity"
+            >
+              <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mx-auto mb-2">
+                <Heart
+                  className={cn(
+                    "w-6 h-6 transition-all duration-200",
+                    isFav
+                      ? "fill-red-500 text-red-500"
+                      : "text-primary hover:text-red-500"
+                  )}
+                />
+              </div>
+              <div className="h-8 flex items-center">
+                <p className="text-sm font-display font-semibold text-foreground">
+                  {isFav ? "Salvata" : "Salveaza"}
+                </p>
+              </div>
+              <p className="text-xs text-muted-foreground">pentru mai tarziu</p>
+            </button>
           </div>
         </div>
 

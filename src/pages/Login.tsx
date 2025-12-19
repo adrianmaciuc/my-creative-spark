@@ -66,9 +66,9 @@ export function Login() {
                 <ChefHat className="w-6 h-6 text-primary-foreground" />
               </div>
             </div>
-            <CardTitle className="text-2xl text-center">Welcome Back</CardTitle>
+            <CardTitle className="text-2xl text-center">Autentificare</CardTitle>
             <CardDescription className="text-center">
-              Sign in to your account to continue
+              Logheaza-te in contul tau pentru a continua
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -80,12 +80,12 @@ export function Login() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="identifier">Email or Username</Label>
+                <Label htmlFor="identifier">Email sau Username</Label>
                 <Input
                   id="identifier"
                   name="identifier"
                   type="text"
-                  placeholder="your@email.com or username"
+                  placeholder="your@email.com sau username"
                   value={formData.identifier}
                   onChange={handleChange}
                   disabled={isLoading}
@@ -93,7 +93,7 @@ export function Login() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Parola</Label>
                 <Input
                   id="password"
                   name="password"
@@ -106,18 +106,18 @@ export function Login() {
               </div>
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Sign In"}
+                {isLoading ? "Se conecteaza..." : "Autentificare"}
               </Button>
             </form>
 
             <div className="mt-6 space-y-2 text-center text-sm">
               <p className="text-muted-foreground">
-                Don't have an account?{" "}
+                Nu ai un cont?{" "}
                 <Link
                   to="/register"
                   className="text-primary hover:underline font-medium"
                 >
-                  Register here
+                  Inregistreaza-te aici
                 </Link>
               </p>
             </div>

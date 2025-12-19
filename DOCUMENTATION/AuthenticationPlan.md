@@ -496,7 +496,7 @@ Color: Turquoise on hover, Red when favorited
 
 ### Step 4.1: Create Cook Dashboard
 
-**Status**: ❌ Not started
+**Status**: 🔄 In Progress
 
 **File**: `src/pages/CookDashboard.tsx`
 

@@ -102,14 +102,9 @@ export function Header({ onAddRecipe }: HeaderProps) {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="flex items-center gap-2">
-              <Button asChild variant="outline" size="sm">
-                <Link to="/login">Login</Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link to="/register">Register</Link>
-              </Button>
-            </div>
+            <Button asChild size="sm">
+              <Link to="/login">Autentificare</Link>
+            </Button>
           )}
         </div>
       </div>
