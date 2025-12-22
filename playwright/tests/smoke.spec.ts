@@ -97,12 +97,12 @@ test("home page smoke test - validate all elements", async ({ page }) => {
   for (const id of recipeIndexes) {
     const card = page.getByTestId(`recipe-card-${id}`);
     await expect(card).toBeVisible();
-    await expect(page.getByTestId(`recipe-card-${id}-title`)).toBeVisible();
+    await expect(page.getByTestId(`recipe-card-title-${id}`)).toBeVisible();
     await expect(
-      page.getByTestId(`recipe-card-${id}-difficulty`)
+      page.getByTestId(`recipe-card-difficulty-${id}`)
     ).toBeVisible();
-    await expect(page.getByTestId(`recipe-card-${id}-time`)).toBeVisible();
-    await expect(page.getByTestId(`recipe-card-${id}-servings`)).toBeVisible();
+    await expect(page.getByTestId(`recipe-card-time-${id}`)).toBeVisible();
+    await expect(page.getByTestId(`recipe-card-servings-${id}`)).toBeVisible();
   }
 
   // Recipe grid
