@@ -39,22 +39,22 @@ export function RecipeCard({
       {/* Image Container */}
       <div
         className="relative aspect-[4/3] overflow-hidden"
-        data-testid={`recipe-card-${recipe.id}-image-container`}
+        data-testid={`recipe-card-image-container-${recipe.id}`}
       >
         <img
           src={recipe.coverImage}
           alt={recipe.title}
-          data-testid={`recipe-card-${recipe.id}-image`}
+          data-testid={`recipe-card-image-${recipe.id}`}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div
           className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          data-testid={`recipe-card-${recipe.id}-image-overlay`}
+          data-testid={`recipe-card-image-overlay-${recipe.id}`}
         />
 
         {/* Difficulty Badge */}
         <span
-          data-testid={`recipe-card-${recipe.id}-difficulty`}
+          data-testid={`recipe-card-difficulty-${recipe.id}`}
           className={cn(
             "absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold",
             "backdrop-blur-sm shadow-sm",
@@ -66,17 +66,17 @@ export function RecipeCard({
       </div>
 
       {/* Content */}
-      <div className="p-5" data-testid={`recipe-card-${recipe.id}-content`}>
+      <div className="p-5" data-testid={`recipe-card-content-${recipe.id}`}>
         <h3
           className="font-display text-lg font-semibold text-card-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors"
-          data-testid={`recipe-card-${recipe.id}-title`}
+          data-testid={`recipe-card-title-${recipe.id}`}
         >
           {recipe.title}
         </h3>
 
         <p
           className="text-muted-foreground text-sm line-clamp-2 mb-4 font-recipe"
-          data-testid={`recipe-card-${recipe.id}-description`}
+          data-testid={`recipe-card-description-${recipe.id}`}
         >
           {recipe.description}
         </p>
@@ -84,41 +84,41 @@ export function RecipeCard({
         {/* Meta Info */}
         <div
           className="flex items-center gap-4 text-sm text-muted-foreground"
-          data-testid={`recipe-card-${recipe.id}-meta`}
+          data-testid={`recipe-card-meta-${recipe.id}`}
         >
           <div
             className="flex items-center gap-1.5"
-            data-testid={`recipe-card-${recipe.id}-time`}
+            data-testid={`recipe-card-time-${recipe.id}`}
           >
             <Clock
               className="w-4 h-4 text-primary"
-              data-testid={`recipe-card-${recipe.id}-time-icon`}
+              data-testid={`recipe-card-time-icon-${recipe.id}`}
             />
-            <span data-testid={`recipe-card-${recipe.id}-time-value`}>
+            <span data-testid={`recipe-card-time-value-${recipe.id}`}>
               {totalTime} min
             </span>
           </div>
           <div
             className="flex items-center gap-1.5"
-            data-testid={`recipe-card-${recipe.id}-servings`}
+            data-testid={`recipe-card-servings-${recipe.id}`}
           >
             <Users
               className="w-4 h-4 text-primary"
-              data-testid={`recipe-card-${recipe.id}-servings-icon`}
+              data-testid={`recipe-card-servings-icon-${recipe.id}`}
             />
-            <span data-testid={`recipe-card-${recipe.id}-servings-value`}>
+            <span data-testid={`recipe-card-servings-value-${recipe.id}`}>
               {recipe.servings}
             </span>
           </div>
           <div
             className="flex items-center gap-1.5"
-            data-testid={`recipe-card-${recipe.id}-ingredients-count`}
+            data-testid={`recipe-card-ingredients-count-${recipe.id}`}
           >
             <ChefHat
               className="w-4 h-4 text-primary"
-              data-testid={`recipe-card-${recipe.id}-ingredients-icon`}
+              data-testid={`recipe-card-ingredients-icon-${recipe.id}`}
             />
-            <span data-testid={`recipe-card-${recipe.id}-ingredients-value`}>
+            <span data-testid={`recipe-card-ingredients-value-${recipe.id}`}>
               {recipe.ingredients.length}
             </span>
           </div>
@@ -128,12 +128,12 @@ export function RecipeCard({
         {recipe.tags.length > 0 && (
           <div
             className="flex flex-wrap gap-1.5 mt-4"
-            data-testid={`recipe-card-${recipe.id}-tags`}
+            data-testid={`recipe-card-tags-${recipe.id}`}
           >
             {recipe.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                data-testid={`recipe-card-${recipe.id}-tag-${tag}`}
+                data-testid={`recipe-card-tag-${recipe.id}-${tag}`}
                 className="px-2 py-0.5 bg-secondary text-secondary-foreground text-xs rounded-md"
               >
                 {tag}
