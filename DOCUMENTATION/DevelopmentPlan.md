@@ -535,6 +535,8 @@ Step 5: Bake for 12-15 minutes until crust is golden
 1. Install Playwright and dependencies:
 
    ```bash
+   mkdir playwright
+   cd playwright
    npm init playwright@latest
    ```
 
