@@ -146,13 +146,18 @@ function mapStrapiToRecipe(data: any): Recipe {
       unit: ing?.unit ?? "",
       notes: ing?.notes ?? "",
     })),
-    instructions: (attrs?.instructions || []).map((ins: any, idx: number) => ({
-      id: String(ins?.id ?? idx),
-      stepNumber: ins?.stepNumber ?? idx + 1,
-      description: ins?.description ?? "",
-      image: ins?.image?.url ? getImageUrl(ins.image.url) : undefined,
-      tips: ins?.tips ?? undefined,
-    })),
+    instructions: (attrs?.instructions || []).map((ins: any, idx: number) => {
+      const media = ins?.image?.data?.attributes ?? ins?.image;
+      const imgUrl =
+        media?.url || media?.formats?.medium?.url || media?.formats?.small?.url;
+      return {
+        id: String(ins?.id ?? idx),
+        stepNumber: ins?.stepNumber ?? idx + 1,
+        description: ins?.description ?? "",
+        image: imgUrl ? getImageUrl(imgUrl) : undefined,
+        tips: ins?.tips ?? undefined,
+      };
+    }),
     prepTime: Number(attrs?.prepTime ?? 0),
     cookTime: Number(attrs?.cookTime ?? 0),
     servings: Number(attrs?.servings ?? 1),
