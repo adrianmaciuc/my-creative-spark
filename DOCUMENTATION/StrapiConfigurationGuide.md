@@ -337,7 +337,6 @@ We'll add 13 fields in total. Let's go one by one:
    - **Number format**: Integer
    - go to **Advanced settings** tab
    - Check **"Required field"**
-   - **Minimum value**: 0
    - Click **Finish**
 
 #### Field 9: cookTime (Number)
@@ -349,7 +348,6 @@ We'll add 13 fields in total. Let's go one by one:
    - **Number format**: Integer
    - go to **Advanced settings** tab
    - Check **"Required field"**
-   - **Minimum value**: 0
    - Click **Finish**
 
 #### Field 10: servings (Number)
@@ -389,9 +387,10 @@ We'll add 13 fields in total. Let's go one by one:
      - Should show **Recipe**
      - **Field name**: `categories` (auto-filled)
    - **Right side (Category)**:
-     - Select **Category** from dropdown
-     - **Field name**: `recipe` (auto-filled)
+     - Should show **Category** from dropdown
+     - **Field name**: blank
    - **Relation type**: Click the **3rd icon** (middle row, center)
+     - Now on the right side it should show **Category** with field name **recipe**
      - This represents: "Recipe **belongs to many** Categories"
    - Click **Finish**
 
