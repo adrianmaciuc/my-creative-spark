@@ -1,5 +1,33 @@
 # Authentication & User Roles Implementation Plan
 
+⚠️ **ARCHIVED - December 22, 2025**
+
+**This plan has been archived. All authentication features have been removed from the codebase.**
+
+---
+
+**Reason for removal**: Decided to keep the app simple and focus on core recipe functionality without authentication features. Strapi backend has been reset and will be reconfigured following StrapiConfigurationGuide.md (Parts 1-6 only).
+
+**What was removed**:
+
+- AuthContext and auth infrastructure
+- Login/Register pages
+- User Profile page
+- Favorites feature
+- Protected routes
+- All auth-related API calls
+
+**Current app features**:
+
+- Browse recipes (public access)
+- View recipe details
+- Search recipes
+- No user accounts needed
+
+---
+
+## Original Plan (For Reference Only)
+
 **Recipe App User & Chef Authentication System**
 
 ---

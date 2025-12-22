@@ -1,10 +1,6 @@
-import { useNavigate } from "react-router-dom";
 import { Recipe } from "@/lib/types";
-import { Clock, Users, ChefHat, Heart } from "lucide-react";
+import { Clock, Users, ChefHat } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useFavorites } from "@/hooks/useFavorites";
-import { useAuth } from "@/hooks/useAuth";
-import { toast } from "sonner";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -26,39 +22,6 @@ export function RecipeCard({
   style,
 }: RecipeCardProps) {
   const totalTime = recipe.prepTime + recipe.cookTime;
-  const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  const { isFavorite, toggleFavorite } = useFavorites();
-
-  const handleFavoriteClick = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    if (!isAuthenticated) {
-      toast.error("Pentru a favoriza retetele, creaza un cont", {
-        description:
-          "Alatura-te comunitatii noastre pentru a salva retetele preferate",
-        action: {
-          label: "Autentificare",
-          onClick: () => navigate("/register"),
-        },
-        duration: 7000,
-        className: "text-base md:text-lg font-medium flex flex-col gap-3",
-        icon: null,
-        style: {
-          padding: "20px",
-        },
-      });
-      return;
-    }
-
-    try {
-      await toggleFavorite(recipe.id);
-    } catch (error) {
-      toast.error("Failed to update favorite");
-    }
-  };
-
-  const isFav = isFavorite(recipe.id);
 
   return (
     <article
@@ -91,21 +54,6 @@ export function RecipeCard({
         >
           {recipe.difficulty}
         </span>
-
-        {/* Favorite Button */}
-        <button
-          onClick={handleFavoriteClick}
-          className="absolute top-3 left-3 p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-all duration-200 shadow-sm"
-        >
-          <Heart
-            className={cn(
-              "w-5 h-5 transition-all duration-200",
-              isFav
-                ? "fill-red-500 text-red-500"
-                : "text-foreground hover:text-red-500"
-            )}
-          />
-        </button>
       </div>
 
       {/* Content */}
