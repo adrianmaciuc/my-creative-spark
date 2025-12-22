@@ -178,21 +178,6 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
                       <p className="font-recipe text-lg text-foreground leading-relaxed">
                         {instruction.description}
                       </p>
-                      {instruction.image && (
-                        <div
-                          className="mt-3 group relative rounded-xl overflow-hidden border border-border shadow-card cursor-pointer"
-                          onClick={() => setSelectedImage(instruction.image)}
-                        >
-                          <img
-                            src={instruction.image}
-                            alt={`Pasul ${instruction.stepNumber}`}
-                            className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-foreground/10">
-                            <ZoomIn className="w-6 h-6 text-primary-foreground" />
-                          </div>
-                        </div>
-                      )}
                       {instruction.tips && (
                         <div className="mt-3 p-4 bg-secondary rounded-lg border-l-4 border-primary">
                           <p className="text-sm text-secondary-foreground">

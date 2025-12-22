@@ -190,19 +190,7 @@ Components are reusable structures that can be used in multiple content types.
    - Check **"Required field"**
    - Click **Finish**
 
-**Field 3: image** (optional)
-
-1. Click **"Add another field to this component"**
-2. Select **Media** field type
-3. **Name**: `image`
-4. Configuration:
-   - **Type**: Single media
-   - go to advanced settings tab
-   - **Allowed types of media**: Check only **"Images"**
-   - Leave **"Required field"** unchecked
-   - Click **Finish**
-
-**Field 4: tips** (optional)
+**Field 3: tips** (optional)
 
 1. Click **"Add another field to this component"**
 2. Select **Text** field type
@@ -553,34 +541,29 @@ Click **"Add a component"** for each step:
 
    - **stepNumber**: `1`
    - **description**: `Preheat your oven to 250°C (480°F). If using a pizza stone, place it in the oven while preheating.`
-   - **image**: Leave empty or add image
    - **tips**: `A hot oven is key to a crispy crust`
 
 2. Step 2:
 
    - **stepNumber**: `2`
    - **description**: `Roll out the pizza dough on a floured surface into a 12-inch circle, about 1/4 inch thick.`
-   - **image**: Leave empty
    - **tips**: Leave empty
 
 3. Step 3:
 
    - **stepNumber**: `3`
    - **description**: `Spread tomato sauce evenly over the dough, leaving a 1-inch border for the crust.`
-   - **image**: Leave empty
    - **tips**: Leave empty
 
 4. Step 4:
 
    - **stepNumber**: `4`
    - **description**: `Distribute torn mozzarella pieces evenly over the sauce.`
-   - **image**: Leave empty
    - **tips**: Leave empty
 
 5. Step 5:
    - **stepNumber**: `5`
    - **description**: `Bake for 12-15 minutes until the crust is golden and cheese is bubbly. Remove from oven, add fresh basil leaves and drizzle with olive oil.`
-   - **image**: Leave empty
    - **tips**: `Add basil after baking to keep it fresh`
 
 **Times & Servings:**
