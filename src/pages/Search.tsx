@@ -51,10 +51,16 @@ export default function SearchPage() {
     <div className="min-h-screen bg-background" data-testid="search-page">
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto mb-8">
-          <h1 className="font-display text-3xl font-bold mb-2" data-testid="search-page-title">
+          <h1
+            className="font-display text-3xl font-bold mb-2"
+            data-testid="search-page-title"
+          >
             Search recipes
           </h1>
-          <p className="text-muted-foreground mb-4" data-testid="search-page-subtitle">
+          <p
+            className="text-muted-foreground mb-4"
+            data-testid="search-page-subtitle"
+          >
             Search by title, ingredient, tag or step
           </p>
           <SearchBar
@@ -66,7 +72,11 @@ export default function SearchPage() {
           />
         </div>
 
-        {error && <div className="text-amber-600 mb-6" data-testid="search-page-error">{error}</div>}
+        {error && (
+          <div className="text-amber-600 mb-6" data-testid="search-page-error">
+            {error}
+          </div>
+        )}
 
         <RecipeGrid
           recipes={results}

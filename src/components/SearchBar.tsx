@@ -33,7 +33,10 @@ export function SearchBar({
   }, [onSearch]);
 
   return (
-    <div className={cn("relative w-full max-w-xl", className)} data-testid="search-bar-container">
+    <div
+      className={cn("relative w-full max-w-xl", className)}
+      data-testid="search-bar-container"
+    >
       <div
         className={cn(
           "relative flex items-center bg-card rounded-xl border-2 transition-all duration-300",
@@ -72,7 +75,10 @@ export function SearchBar({
             aria-label="Clear search"
             data-testid="search-bar-clear-button"
           >
-            <X className="w-4 h-4 text-muted-foreground" data-testid="search-bar-clear-icon" />
+            <X
+              className="w-4 h-4 text-muted-foreground"
+              data-testid="search-bar-clear-icon"
+            />
           </button>
         )}
       </div>

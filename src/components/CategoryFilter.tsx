@@ -29,7 +29,10 @@ export function CategoryFilter({
         ];
 
   return (
-    <div className="flex flex-wrap justify-center gap-2 mb-8" data-testid="category-filter-list">
+    <div
+      className="flex flex-wrap justify-center gap-2 mb-8"
+      data-testid="category-filter-list"
+    >
       {list.map((category) => (
         <button
           key={category.slug}
