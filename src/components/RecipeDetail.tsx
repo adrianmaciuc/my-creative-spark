@@ -158,34 +158,39 @@ export function RecipeDetail({ recipe, onClose }: RecipeDetailProps) {
 
           {/* Instructions */}
           <div className="lg:col-span-2">
-            <h2 className="font-display text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-accent-foreground text-sm">
-                📝
-              </span>
-              Instructiuni
-            </h2>
-            <ol className="space-y-6">
-              {recipe.instructions.map((instruction) => (
-                <li key={instruction.id} className="flex gap-4">
-                  <span className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-primary-foreground font-display font-bold text-lg flex items-center justify-center">
-                    {instruction.stepNumber}
-                  </span>
-                  <div className="flex-1 pt-2">
-                    <p className="font-recipe text-lg text-foreground leading-relaxed">
-                      {instruction.description}
-                    </p>
-                    {instruction.tips && (
-                      <div className="mt-3 p-4 bg-secondary rounded-lg border-l-4 border-primary">
-                        <p className="text-sm text-secondary-foreground">
-                          <span className="font-semibold">💡 Tip:</span>{" "}
-                          {instruction.tips}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ol>
+            <div className="bg-card rounded-2xl shadow-card p-6">
+              <h2 className="font-display text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
+                <span className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-accent-foreground text-sm">
+                  📝
+                </span>
+                Instructiuni
+              </h2>
+              <div className="text-sm text-muted-foreground mb-6">
+                Pregatire: {recipe.prepTime} min • Gatire: {recipe.cookTime} min
+              </div>
+              <ol className="space-y-6">
+                {recipe.instructions.map((instruction) => (
+                  <li key={instruction.id} className="flex gap-4">
+                    <span className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-primary-foreground font-display font-bold text-lg flex items-center justify-center">
+                      {instruction.stepNumber}
+                    </span>
+                    <div className="flex-1 pt-2">
+                      <p className="font-recipe text-lg text-foreground leading-relaxed">
+                        {instruction.description}
+                      </p>
+                      {instruction.tips && (
+                        <div className="mt-3 p-4 bg-secondary rounded-lg border-l-4 border-primary">
+                          <p className="text-sm text-secondary-foreground">
+                            <span className="font-semibold">💡 Tip:</span>{" "}
+                            {instruction.tips}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
         </div>
 

@@ -60,69 +60,107 @@ export function getBackendStatus(): {
 }
 
 function mapStrapiToRecipe(data: any): Recipe {
-  // Defensive mapping: if fields are missing, fall back to reasonable defaults
+  // Support Strapi v4/v5 response shapes (attributes/data wrappers)
+  const attrs = data?.attributes ?? data;
 
-  // Helper to construct full image URL
   const getImageUrl = (url: any): string => {
     if (!url || typeof url !== "string") return "";
     if (url.startsWith("http")) return url;
     return `${STRAPI_URL}${url}`;
   };
 
-  // Extract tags from object format to array
   const extractTags = (tagsData: any): string[] => {
     if (!tagsData) return [];
     if (Array.isArray(tagsData))
       return tagsData.filter((t) => typeof t === "string");
-    if (typeof tagsData === "object") {
-      return Object.keys(tagsData).filter(
-        (key) => key && typeof key === "string"
-      );
-    }
+    if (typeof tagsData === "object")
+      return Object.keys(tagsData).filter((key) => typeof key === "string");
     return [];
   };
 
+  // Cover image (handles media relation wrappers)
+  const coverMedia = attrs?.coverImage?.data?.attributes ?? attrs?.coverImage;
+  const coverImageUrl = getImageUrl(
+    coverMedia?.formats?.medium?.url ||
+      coverMedia?.formats?.small?.url ||
+      coverMedia?.url
+  );
+
+  // Gallery images: scan attributes for likely gallery fields and extract URLs
+  const mediaToUrls = (field: any): string[] => {
+    if (!field) return [];
+    // Handle string URL directly
+    if (typeof field === "string") return [getImageUrl(field)];
+    // Normalize to an array of media items
+    const items = Array.isArray(field?.data)
+      ? field.data
+      : Array.isArray(field)
+      ? field
+      : field?.data
+      ? [field.data]
+      : [field];
+    return items
+      .map((img: any) => {
+        const m = img?.attributes ?? img;
+        const u = m?.url || m?.formats?.medium?.url || m?.formats?.small?.url;
+        return getImageUrl(u);
+      })
+      .filter((u: string) => !!u);
+  };
+
+  let galleryImages: string[] = [];
+  for (const [key, val] of Object.entries(attrs ?? {})) {
+    if (key === "coverImage") continue;
+    if (/gallery|images|photos/i.test(key)) {
+      const urls = mediaToUrls(val);
+      if (urls.length) galleryImages.push(...urls);
+    }
+  }
+  // Deduplicate and exclude cover image
+  galleryImages = Array.from(new Set(galleryImages)).filter(
+    (u) => !!u && u !== coverImageUrl
+  );
+
+  // Categories (handles relation wrappers)
+  const catItems = attrs?.categories?.data ?? attrs?.categories ?? [];
+  const categories = (catItems || []).map((c: any) => {
+    const ca = c?.attributes ?? c;
+    return {
+      id: String(c?.id ?? ca?.documentId ?? ""),
+      name: ca?.name ?? "Unknown",
+      slug: ca?.slug ?? String(c?.id ?? ""),
+    };
+  });
+
   return {
-    id: String(data.id ?? data.documentId ?? Math.random()),
-    slug: data.slug ?? String(data.id ?? ""),
-    title: data.title ?? "Untitled",
-    description: data.description ?? "",
-    coverImage: getImageUrl(
-      data.coverImage?.formats?.medium?.url ||
-        data.coverImage?.formats?.small?.url ||
-        data.coverImage?.url
-    ),
-    galleryImages: (data.galleryImages || []).map((img: any) =>
-      getImageUrl(
-        img?.formats?.medium?.url || img?.formats?.small?.url || img?.url
-      )
-    ),
-    ingredients: (data.ingredients || []).map((ing: any, idx: number) => ({
-      id: String(ing.id ?? idx),
-      item: ing.item ?? "",
-      quantity: ing.quantity ?? "",
-      unit: ing.unit ?? "",
-      notes: ing.notes ?? "",
+    id: String(data?.id ?? data?.documentId ?? Math.random()),
+    slug: attrs?.slug ?? String(data?.id ?? ""),
+    title: attrs?.title ?? "Untitled",
+    description: attrs?.description ?? "",
+    coverImage: coverImageUrl,
+    galleryImages,
+    ingredients: (attrs?.ingredients || []).map((ing: any, idx: number) => ({
+      id: String(ing?.id ?? idx),
+      item: ing?.item ?? "",
+      quantity: ing?.quantity ?? "",
+      unit: ing?.unit ?? "",
+      notes: ing?.notes ?? "",
     })),
-    instructions: (data.instructions || []).map((ins: any, idx: number) => ({
-      id: String(ins.id ?? idx),
-      stepNumber: ins.stepNumber ?? idx + 1,
-      description: ins.description ?? "",
-      image: ins.image?.url ? getImageUrl(ins.image.url) : undefined,
-      tips: ins.tips ?? undefined,
+    instructions: (attrs?.instructions || []).map((ins: any, idx: number) => ({
+      id: String(ins?.id ?? idx),
+      stepNumber: ins?.stepNumber ?? idx + 1,
+      description: ins?.description ?? "",
+      image: ins?.image?.url ? getImageUrl(ins.image.url) : undefined,
+      tips: ins?.tips ?? undefined,
     })),
-    prepTime: Number(data.prepTime ?? 0),
-    cookTime: Number(data.cookTime ?? 0),
-    servings: Number(data.servings ?? 1),
-    difficulty: (data.difficulty ?? "Medium") as any,
-    categories: (data.categories || []).map((c: any) => ({
-      id: String(c.id ?? c.documentId),
-      name: c.name ?? "Unknown",
-      slug: c.slug ?? String(c.id ?? ""),
-    })),
-    tags: extractTags(data.tags),
-    createdAt: data.createdAt,
-    updatedAt: data.updatedAt,
+    prepTime: Number(attrs?.prepTime ?? 0),
+    cookTime: Number(attrs?.cookTime ?? 0),
+    servings: Number(attrs?.servings ?? 1),
+    difficulty: (attrs?.difficulty ?? "Medium") as any,
+    categories,
+    tags: extractTags(attrs?.tags),
+    createdAt: attrs?.createdAt,
+    updatedAt: attrs?.updatedAt,
   } as Recipe;
 }
 
@@ -198,11 +236,14 @@ export async function getCategories(): Promise<
       return [];
     }
     const json = await res.json();
-    const categories = (json.data || []).map((c: any) => ({
-      id: String(c.id ?? c.documentId ?? ""),
-      name: c.name ?? "Unknown",
-      slug: c.slug ?? `cat-${c.id}`,
-    }));
+    const categories = (json.data || []).map((c: any) => {
+      const a = c?.attributes ?? c;
+      return {
+        id: String(c?.id ?? a?.documentId ?? ""),
+        name: a?.name ?? "Unknown",
+        slug: a?.slug ?? `cat-${c?.id}`,
+      };
+    });
     backendHealthy = true;
     return categories;
   } catch (err) {
