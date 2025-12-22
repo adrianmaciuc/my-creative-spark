@@ -156,9 +156,10 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
 
   try {
     const res = await fetch(
-      `${STRAPI_URL.replace(/\/$/, "")}/api/recipes?filters[slug][$eq]=${encodeURIComponent(
-        slug
-      )}&populate=*`
+      `${STRAPI_URL.replace(
+        /\/$/,
+        ""
+      )}/api/recipes?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`
     );
     if (!res.ok) {
       backendHealthy = false;
