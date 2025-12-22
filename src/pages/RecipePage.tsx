@@ -32,20 +32,21 @@ export default function RecipePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center" data-testid="recipe-page-loading">
+        <div className="animate-pulse text-muted-foreground" data-testid="recipe-page-loading-spinner">Loading...</div>
       </div>
     );
   }
 
   if (error || !recipe) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" data-testid="recipe-page-error">
         <div className="text-center">
-          <p className="text-foreground mb-4">{error ?? "Recipe not found"}</p>
+          <p className="text-foreground mb-4" data-testid="recipe-page-error-message">{error ?? "Recipe not found"}</p>
           <button
             onClick={() => navigate("/")}
             className="px-4 py-2 bg-primary text-primary-foreground rounded"
+            data-testid="recipe-page-error-back-button"
           >
             Back home
           </button>

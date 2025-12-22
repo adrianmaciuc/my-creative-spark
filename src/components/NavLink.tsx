@@ -17,6 +17,7 @@ const NavLink = forwardRef<HTMLAnchorElement, NavLinkCompatProps>(
         className={({ isActive, isPending }) =>
           cn(className, isActive && activeClassName, isPending && pendingClassName)
         }
+        data-testid={`nav-link-${typeof to === 'string' ? to.replace(/\//g, '-') : 'dynamic'}`}
         {...props}
       />
     );

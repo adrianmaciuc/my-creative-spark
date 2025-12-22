@@ -104,20 +104,21 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" data-testid="home-page">
       <Header />
 
-      <main>
+      <main data-testid="home-main">
         <Hero onSearch={handleSearch} recipeCount={recipes.length} />
 
-        <section className="container mx-auto px-4 pb-16">
+        <section className="container mx-auto px-4 pb-16" data-testid="recipes-section">
           {backendError && (
             <Alert
               variant="default"
               className="mb-6 bg-amber-50 border-amber-200"
+              data-testid="backend-error-alert"
             >
               <AlertCircle className="h-4 w-4 text-amber-600" />
-              <AlertDescription className="text-amber-800">
+              <AlertDescription className="text-amber-800" data-testid="backend-error-message">
                 <strong>Using sample data:</strong> {backendError}
               </AlertDescription>
             </Alert>
@@ -143,9 +144,9 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-card border-t border-border py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-muted-foreground text-sm">
+      <footer className="bg-card border-t border-border py-8" data-testid="home-footer">
+        <div className="container mx-auto px-4 text-center" data-testid="footer-content">
+          <p className="text-muted-foreground text-sm" data-testid="footer-text">
             Creat cu 💚 de Adrian Maciuc, pentru iubitorii de mancare din
             intreaga lume
           </p>
