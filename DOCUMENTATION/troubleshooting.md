@@ -7,10 +7,46 @@
 - Solution: Delete `.tmp` folder and restart
 - Check Node.js version (needs 18+)
 
-**Issue**: Images not displaying
+**Issue**: Images not displaying / uploads missing in production
 
-- Solution: Check CORS settings in Strapi
-- Verify image URLs in browser DevTools
+- Cause: In production the upload provider may be set to `local` (ephemeral filesystem) or Cloudinary environment variables may be missing or incorrect. If `UPLOAD_PROVIDER` is not set to `cloudinary`, or the `CLOUDINARY_*` creds are wrong, uploads can fail or not persist.
+- Solution:
+
+  - In your backend service (Railway → Service → Settings → Environment Variables), set:
+    - `UPLOAD_PROVIDER=cloudinary`
+    - `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET`, and optionally `CLOUDINARY_FOLDER`.
+  - Redeploy/restart the backend so Strapi picks up the new env vars.
+  - Confirm `@strapi/provider-upload-cloudinary` is installed in `backend/package.json`.
+  - Upload an image via Strapi Admin → Media Library and monitor backend logs for any upload errors.
+  - You can also test an upload with curl (replace `<ADMIN_JWT>` and file path):
+
+    ```bash
+    curl -X POST "https://<your-backend>/api/upload" \
+      -H "Authorization: Bearer <ADMIN_JWT>" \
+      -F "files=@/path/to/image.jpg"
+    ```
+
+  - Or run a quick Node test to verify Cloudinary credentials (example):
+
+    ```js
+    // quick test.js
+    import cloudinary from "cloudinary";
+    cloudinary.v2.config({
+      cloud_name: "cloudinary-name",
+      api_key: "cloudinary-key",
+      api_secret: "cloudinary-secret",
+    });
+    cloudinary.v2.uploader
+      .upload(
+        "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg"
+      )
+      .then((r) => console.log("OK", r))
+      .catch((e) => console.error("ERR", e));
+    ```
+
+  - If you must use the `local` provider in production, be aware the filesystem is ephemeral on platforms like Railway — files may not persist across restarts; prefer Cloudinary for production.
+
+- Tip: Check the Cloudinary dashboard for incoming uploads and verify the configured folder.
 
 **Issue**: Search not working
 
