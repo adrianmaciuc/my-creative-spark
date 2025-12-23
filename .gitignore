@@ -24,9 +24,6 @@ dist-ssr
 *.sw?
 .env
 
-# backend
-backend/
-
 # Playwright
 /test-results/
 /playwright-report/
