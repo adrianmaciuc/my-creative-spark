@@ -16,6 +16,8 @@ import {
 } from "@/lib/strapi";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { isAccessGranted, getAccessName, clearAccessGrant } from "@/lib/access";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -24,6 +26,7 @@ const Index = () => {
   const [recipes, setRecipes] = useState<Recipe[]>(sampleRecipes);
   const [loading, setLoading] = useState(false);
   const [backendError, setBackendError] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [categories, setCategories] = useState<
     { id: string; name: string; slug: string }[]
@@ -103,6 +106,10 @@ const Index = () => {
     };
   }, []);
 
+  useEffect(() => {
+    setIsLoggedIn(isAccessGranted());
+  }, []);
+
   return (
     <div className="min-h-screen bg-background" data-testid="home-page">
       <Header />
@@ -165,8 +172,42 @@ const Index = () => {
             Creat cu 💚 de Adrian Maciuc, pentru iubitorii de mancare din
             intreaga lume
           </p>
+          <button
+            onClick={() => navigate("/access")}
+            className="mt-4 text-muted-foreground hover:text-primary transition-colors text-sm font-medium"
+            title="Add recipes (admin only)"
+            data-testid="home-access-button"
+            aria-label="Access gate"
+          >
+            +
+          </button>
         </div>
       </footer>
+
+      {/* Admin Mode Badge */}
+      {isLoggedIn && (
+        <div
+          className="bg-primary/10 border border-primary rounded-lg p-4 mx-4 mb-4 mt-4"
+          data-testid="admin-mode-badge"
+        >
+          <div className="container mx-auto px-0 flex items-center justify-between">
+            <span className="text-sm font-medium text-primary">
+              ✓ Chef Mode ON. User: {getAccessName()}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                clearAccessGrant();
+                window.location.reload();
+              }}
+              data-testid="admin-logout-button"
+            >
+              Logout
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

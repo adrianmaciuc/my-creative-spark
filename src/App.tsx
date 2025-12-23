@@ -7,6 +7,8 @@ import Index from "./pages/Index";
 import RecipePage from "./pages/RecipePage";
 import SearchPage from "./pages/Search";
 import NotFound from "./pages/NotFound";
+import AccessPage from "./pages/Access";
+import SecretPage from "./pages/Secret";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +22,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/recipe/:slug" element={<RecipePage />} />
+          <Route path="/access" element={<AccessPage />} />
+          <Route path="/secret" element={<SecretPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
