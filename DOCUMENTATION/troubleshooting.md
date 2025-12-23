@@ -17,6 +17,21 @@
 - Solution: Check API permissions (find, findOne enabled)
 - Verify Strapi is running
 
+**Issue**: Cannot access API endpoints (403 Forbidden)
+
+- Cause: The Public role may not have `find`/`findOne` permissions for relevant collection types (for example, `Category` or `Recipe`).
+- Solution:
+
+  - Open Strapi admin → **Settings** → **Users & Permissions plugin** → **Roles** → **Public**.
+  - Enable **find** and **findOne** for `Category` and `Recipe`, then click **Save**.
+  - Re-test the endpoint, for example:
+
+    ```bash
+    curl -i https://<your-backend>/api/categories
+    ```
+
+  - You should get HTTP 200 and JSON (not 403).
+
 **Issue**: Build fails
 
 - Solution: Delete `node_modules` and `dist` folders
