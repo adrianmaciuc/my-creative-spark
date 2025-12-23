@@ -329,60 +329,6 @@ test("access gate - logout clears access", async ({ page }) => {
 
 ---
 
-## Future Enhancements
-
-### 1. Rate Limiting
-
-Add attempt counter + cooldown:
-
-```typescript
-// In localStorage
-localStorage.setItem(
-  "access_attempts",
-  JSON.stringify({
-    count: 0,
-    lastAttempt: Date.now(),
-    locked: false,
-  })
-);
-```
-
-### 2. Multiple Secrets
-
-Support different access levels:
-
-```typescript
-const SECRETS = {
-  admin: import.meta.env.VITE_ACCESS_SECRET_ADMIN,
-  user: import.meta.env.VITE_ACCESS_SECRET_USER,
-};
-
-const level = await verifySecret(input); // returns "admin" | "user" | false
-```
-
-### 3. Server-Side Verification (Option 2)
-
-If you want hidden secrets, create a Vercel/Netlify function:
-
-```typescript
-// api/access/verify.ts
-export default async function handler(req, res) {
-  const { secret } = req.body;
-  const match = secret === process.env.ACCESS_SECRET;
-  if (match) {
-    res.json({ ok: true });
-  } else {
-    res.status(401).json({ ok: false });
-  }
-}
-```
-
-### 4. Time-Based One-Time Codes (TOTP)
-
-Use a library like `speakeasy` for time-based codes instead of static secrets.
-
----
-
 ## Enhancements (v2)
 
 ### Feature 1: Access Gate Button on Home Page
@@ -422,19 +368,6 @@ Use a library like `speakeasy` for time-based codes instead of static secrets.
 - 5-second timer before redirect
 - Can skip timer with button (optional)
 
-**Code:**
-
-```typescript
-useEffect(() => {
-  if (grant) {
-    const timer = setTimeout(() => {
-      navigate("/");
-    }, 5000);
-    return () => clearTimeout(timer);
-  }
-}, [grant, navigate]);
-```
-
 ### Feature 3: Login Status Indicator on Home Page
 
 **Purpose:** Visual confirmation of logged-in status on home page
@@ -442,70 +375,9 @@ useEffect(() => {
 **Implementation:**
 
 - Create utility function `isAccessGranted()` to check localStorage
-- Add badge/banner near footer showing "Admin Mode" when logged in
+- Add badge/banner near footer showing "Chef Mode ON" when logged in
 - Show "Add New Recipe" link (visible only when logged in)
 - Include logout button
-
-**Code:**
-
-```typescript
-// utils/access.ts
-export function isAccessGranted(): boolean {
-  try {
-    const grant = localStorage.getItem("access_grant");
-    if (!grant) return false;
-    const { expiresAt } = JSON.parse(grant);
-    return Date.now() < expiresAt;
-  } catch {
-    return false;
-  }
-}
-
-export function getAccessName(): string | null {
-  try {
-    const grant = localStorage.getItem("access_grant");
-    if (!grant) return null;
-    const { expiresAt, name } = JSON.parse(grant);
-    return Date.now() < expiresAt ? name : null;
-  } catch {
-    return null;
-  }
-}
-```
-
-**In Index.tsx:**
-
-```typescript
-const [isLoggedIn, setIsLoggedIn] = useState(false);
-const adminName = getAccessName();
-
-useEffect(() => {
-  setIsLoggedIn(isAccessGranted());
-}, []);
-
-// In footer or sidebar
-{
-  isLoggedIn && (
-    <div
-      className="bg-primary/10 border border-primary rounded p-4"
-      data-testid="admin-mode-badge"
-    >
-      <p className="text-sm font-medium">
-        Admin Mode: {adminName}
-        <button
-          onClick={() => {
-            localStorage.removeItem("access_grant");
-            window.location.reload();
-          }}
-          className="ml-2"
-        >
-          Logout
-        </button>
-      </p>
-    </div>
-  );
-}
-```
 
 ---
 
@@ -571,15 +443,3 @@ useEffect(() => {
 - Log access attempts to external service
 
 ---
-
-## Related Files
-
-- [AccessGatePlan.md](AccessGatePlan.md) - Original planning doc with all options
-- [src/pages/Access.tsx](/Users/adrianma/stuff/my-creative-spark/src/pages/Access.tsx)
-- [src/pages/Secret.tsx](/Users/adrianma/stuff/my-creative-spark/src/pages/Secret.tsx)
-- [.env.example](/.env.example)
-
----
-
-**Last Updated:** December 23, 2025  
-**Implementation Status:** ✅ Complete and tested
