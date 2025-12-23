@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_recipe_instructions",
+  "info": {
+    "displayName": "instruction",
+    "icon": "calendar"
+  },
+  "options": {},
+  "attributes": {
+    "stepNumber": {
+      "type": "integer",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "tips": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

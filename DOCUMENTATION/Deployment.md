@@ -86,20 +86,27 @@ Save these values securely — they'll be added as Railway environment variables
 
 ```
 NODE_ENV=production
+URL=https://<your-backend>.railway.app
+HOST=0.0.0.0
+PORT=1337
+
+# Database (Railway Postgres)
 DATABASE_CLIENT=postgres
 DATABASE_URL=<Railway Postgres connection string>
 DATABASE_SSL=true
+
+# Uploads (Cloudinary)
 UPLOAD_PROVIDER=cloudinary
 CLOUDINARY_NAME=<cloudinary name>
 CLOUDINARY_KEY=<cloudinary key>
 CLOUDINARY_SECRET=<cloudinary secret>
 CLOUDINARY_FOLDER=recipes
+
+# Secrets
 APP_KEYS=<generated app key(s)>
 API_TOKEN_SALT=<generated salt>
 ADMIN_JWT_SECRET=<generated admin jwt secret>
 JWT_SECRET=<generated jwt secret>
-HOST=0.0.0.0
-PORT=1337
 ```
 
 Notes:
@@ -172,3 +179,68 @@ To rollback, use the Railway UI to revert to a previous deployment or re-deploy 
 ---
 
 This document is reference-friendly and contains the common Railway UI steps needed to deploy the application. If you'd like, I can add screenshots or a short script that seeds Strapi with demo content to speed up verification after deploy.
+
+### Example `.env` values (development vs production)
+
+See [backend/.env.example](backend/.env.example) for copy-paste blocks. Use the dev (SQLite + local uploads) locally, and set the Railway + Cloudinary block as service variables in production.
+
+---
+
+## Backend Environment & Gitignore
+
+To ensure local changes never affect production, keep environment-driven configuration and local data out of Git. See [backend/.gitignore](backend/.gitignore) and [backend/.env.example](backend/.env.example).
+
+**Ignore (local-only) files/folders**
+
+- Env files: `.env*` while keeping `!.env.example` committed
+- Temp/cache/build: `.tmp/`, `.cache/`, `build/`
+- Local DB files: `*.db`, `*.sqlite`, `database/*.db`
+- Local uploads: `public/uploads/`, `uploads/`
+- Logs/editor: logs, `.vscode`, `.DS_Store` (already present)
+
+Example additions for `.gitignore`:
+
+```gitignore
+.env*
+!.env.example
+.tmp/
+.cache/
+build/
+*.db
+*.sqlite
+database/*.db
+public/uploads/
+uploads/
+coverage/
+reports/
+```
+
+**Environment template (`.env.example`)**
+
+- Server: `HOST`, `PORT`, `URL`, `NODE_ENV`
+- Secrets: `APP_KEYS`, `API_TOKEN_SALT`, `ADMIN_JWT_SECRET`, `TRANSFER_TOKEN_SALT`, `JWT_SECRET`, `ENCRYPTION_KEY`
+- DB (choose one):
+  - Dev: `DATABASE_CLIENT=sqlite`, `DATABASE_FILENAME=.tmp/data.db`
+  - Prod (example): `DATABASE_CLIENT=postgres` and standard Postgres vars
+- Upload provider:
+  - Default local: `UPLOAD_PROVIDER=local`
+  - Cloudinary/S3: uncomment provider block and set keys via env in production
+
+Generate strong secrets:
+
+```bash
+openssl rand -hex 32
+```
+
+Local setup:
+
+```bash
+cp backend/.env.example backend/.env
+# edit backend/.env for local sqlite + local uploads
+```
+
+Production setup:
+
+- Do not commit `.env`
+- Set vars in your platform (Railway Service → Variables)
+- Use Postgres and cloud upload provider (e.g., Cloudinary) as documented above

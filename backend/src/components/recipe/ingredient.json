@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_recipe_ingredients",
+  "info": {
+    "displayName": "ingredient",
+    "icon": "priceTag"
+  },
+  "options": {},
+  "attributes": {
+    "item": {
+      "type": "string",
+      "required": true
+    },
+    "quantity": {
+      "type": "string",
+      "required": true
+    },
+    "unit": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
