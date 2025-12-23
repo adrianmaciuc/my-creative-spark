@@ -227,39 +227,47 @@ const AddRecipe = () => {
         {/* Ingredients */}
         <div>
           <h2 className="text-xl font-medium mb-2">Ingredients</h2>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {ingredients.map((ing, idx) => (
-              <div key={idx} className="grid sm:grid-cols-4 gap-2">
-                <Input
-                  placeholder="Item"
-                  value={ing.item}
-                  onChange={(e) =>
-                    updateIngredient(idx, { item: e.target.value })
-                  }
-                />
-                <Input
-                  placeholder="Quantity"
-                  value={ing.quantity}
-                  onChange={(e) =>
-                    updateIngredient(idx, { quantity: e.target.value })
-                  }
-                />
-                <Input
-                  placeholder="Unit"
-                  value={ing.unit || ""}
-                  onChange={(e) =>
-                    updateIngredient(idx, { unit: e.target.value })
-                  }
-                />
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    type="button"
-                    onClick={() => removeIngredient(idx)}
-                  >
-                    Remove
-                  </Button>
+              <div key={idx} className="border rounded-lg p-3 space-y-2">
+                <div className="grid sm:grid-cols-3 gap-2">
+                  <Input
+                    placeholder="Item*"
+                    value={ing.item}
+                    onChange={(e) =>
+                      updateIngredient(idx, { item: e.target.value })
+                    }
+                  />
+                  <Input
+                    placeholder="Quantity*"
+                    value={ing.quantity}
+                    onChange={(e) =>
+                      updateIngredient(idx, { quantity: e.target.value })
+                    }
+                  />
+                  <Input
+                    placeholder="Unit"
+                    value={ing.unit || ""}
+                    onChange={(e) =>
+                      updateIngredient(idx, { unit: e.target.value })
+                    }
+                  />
                 </div>
+                <Input
+                  placeholder="Notes (optional)"
+                  value={ing.notes || ""}
+                  onChange={(e) =>
+                    updateIngredient(idx, { notes: e.target.value })
+                  }
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  type="button"
+                  onClick={() => removeIngredient(idx)}
+                >
+                  Remove
+                </Button>
               </div>
             ))}
             <Button type="button" onClick={addIngredient} variant="secondary">
@@ -271,30 +279,36 @@ const AddRecipe = () => {
         {/* Instructions */}
         <div>
           <h2 className="text-xl font-medium mb-2">Instructions</h2>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {instructions.map((ins, idx) => (
-              <div key={idx} className="grid sm:grid-cols-6 gap-2 items-center">
-                <div className="sm:col-span-1">
-                  <Input readOnly value={ins.stepNumber} />
-                </div>
-                <div className="sm:col-span-5">
+              <div key={idx} className="border rounded-lg p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-sm w-8">
+                    #{ins.stepNumber}
+                  </span>
                   <Input
-                    placeholder="Step description"
+                    placeholder="Step description*"
                     value={ins.description}
                     onChange={(e) =>
                       updateInstruction(idx, { description: e.target.value })
                     }
                   />
                 </div>
-                <div className="sm:col-span-6 flex gap-2">
-                  <Button
-                    variant="outline"
-                    type="button"
-                    onClick={() => removeInstruction(idx)}
-                  >
-                    Remove
-                  </Button>
-                </div>
+                <Input
+                  placeholder="Tips (optional)"
+                  value={ins.tips || ""}
+                  onChange={(e) =>
+                    updateInstruction(idx, { tips: e.target.value })
+                  }
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  type="button"
+                  onClick={() => removeInstruction(idx)}
+                >
+                  Remove
+                </Button>
               </div>
             ))}
             <Button type="button" onClick={addInstruction} variant="secondary">
