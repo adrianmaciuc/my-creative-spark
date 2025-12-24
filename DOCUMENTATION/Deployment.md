@@ -76,6 +76,35 @@ Save these values securely — they'll be added as Railway environment variables
 2. Click **New** → **Database** → **Postgres** (Railway provisions it automatically).
 3. Wait until the database is ready and copy the `DATABASE_URL` (connection string).
 
+### Alternative: use Supabase (external Postgres)
+
+If you prefer to host Postgres on Supabase (free or paid tier) and deploy Strapi on Railway, follow these quick steps and caveats:
+
+- Create a Supabase project and copy the **Connection string** (Settings → Database → Connection string). Use the full `postgres://...` URL provided by Supabase.
+- On your Railway Strapi service, set the DB env vars to point to Supabase (example):
+
+```
+# Database (Supabase Postgres)
+DATABASE_CLIENT=postgres
+DATABASE_URL=postgres://<user>:<password>@<host>:<port>/<db>?sslmode=require
+DATABASE_SSL=true
+DATABASE_POOL_MIN=1
+DATABASE_POOL_MAX=5  # lower pool to avoid hitting free-tier connection limits
+```
+
+- Important notes and caveats:
+
+  - Supabase free tier has limited concurrent connections — keep `DATABASE_POOL_MAX` low (2–5) and monitor for "too many clients" or connection errors.
+  - Ensure the connection string is URL-encoded if your password contains special characters.
+  - Enable SSL (add `?sslmode=require` to the `DATABASE_URL` or set `DATABASE_SSL=true`) — Supabase requires TLS for remote connections.
+  - If you have network restrictions enabled on Supabase, allow Railway outgoing connections or use Supabase connection pooling/pgbouncer when available.
+  - Set `DATABASE_SCHEMA` if you use a non-default schema (default: `public`).
+
+- Verification & troubleshooting:
+  - After redeploy, check Railway logs for a successful DB connection and that Strapi started without DB errors.
+  - Test the API: `curl -i https://<your-backend>.railway.app/api/recipes` (or open `/admin`) to validate the service.
+  - If connections fail, verify `DATABASE_URL`, SSL options, and pool sizes; consider adding a connection pooler if you need more concurrent connections.
+
 ---
 
 ## Step 3 — Add Strapi service and env vars
