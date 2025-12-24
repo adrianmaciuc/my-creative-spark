@@ -198,6 +198,25 @@ To rollback, use the Railway UI to revert to a previous deployment or re-deploy 
 - _Unknown dialect `postgresql` or missing Postgres driver_: If Strapi logs `Unknown dialect postgresql`, or you see an error about a missing `pg` module, fix by:
   - Setting `DATABASE_CLIENT=postgres` (some platforms use `postgresql` by default) and redeploying, and/or
   - Installing the Postgres driver in the backend: `cd backend && npm install pg` (ensure `pg` is listed in `backend/package.json`).
+- _Self-signed certificate in certificate chain / TLS errors_: If you see `self-signed certificate in certificate chain` or similar TLS errors when connecting to Postgres, try one of the following:
+
+  - Preferred: supply the CA used by your DB host as an env var. You can provide it base64-encoded to avoid newline issues:
+
+    ```bash
+    # On your machine (encode the CA file):
+    cat path/to/ca.crt | base64 | tr -d '\n'
+
+    # Set on Railway (Service → Variables):
+    DATABASE_SSL=true
+    DATABASE_SSL_CA_B64=<base64-output>
+    DATABASE_SSL_REJECT_UNAUTHORIZED=true
+    ```
+
+    Strapi will decode `DATABASE_SSL_CA_B64` and include it as the `ca` in the Postgres SSL config.
+
+  - Short-term workaround (less secure): set `DATABASE_SSL=true` and `DATABASE_SSL_REJECT_UNAUTHORIZED=false` to disable verification. **This is insecure** and should only be used for testing.
+  - If you control the DB host, install a certificate signed by a trusted CA or add the CA into your platform's trusted store.
+
 - _Database connection issues_: Confirm `DATABASE_URL` is correct and that SSL settings are consistent with Strapi DB config.
 - _Missing recipes on frontend_: Confirm `VITE_STRAPI_URL` is set correctly on the frontend service and that Strapi `find`/`findOne` permissions are enabled for the `public` role.
 
