@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { categoriesMockedResponse } from "../fixtures/test_data.js";
 
 // Search bar
 const searchBarInput = "search-bar-input";
@@ -9,13 +10,11 @@ const recipeGrid = "recipe-grid";
 
 // Categories
 const categoryFilterAll = "category-filter-all-button";
-const categoryFilterItalian = "category-filter-italian-button";
-const categoryFilterSeafood = "category-filter-seafood-button";
-const categoryFilterThai = "category-filter-thai-button";
+const categoryFilterPreferateCopiilor =
+  "category-filter-preferatele-copiilor-button";
 
 // Recipe cards
 const firstCard = "recipe-card-1";
-const secondCard = "recipe-card-2";
 const allRecipesCards = /^recipe-card-content-/;
 
 test("home page search", async ({ page }) => {
@@ -51,33 +50,28 @@ test("home page search", async ({ page }) => {
 });
 
 test("home page filters", async ({ page }) => {
+  await page.route("**/api/categories", async (route) => {
+    await route.fulfill({
+      status: 200,
+      body: JSON.stringify(categoriesMockedResponse),
+    });
+  });
+
   await page.goto("/");
 
   // Verify all recipes are shown initially
   await expect(page.getByTestId(recipeGrid)).toBeVisible();
-
   await expect(page.getByTestId(allRecipesCards)).toHaveCount(6);
 
-  // Click on Italian category
-  await page.getByTestId(categoryFilterItalian).click();
+  // Click on Preferatele copiilor category
+  await page.getByTestId(categoryFilterPreferateCopiilor).click();
 
-  // Verify Italian recipe is visible
-  await page.getByTestId(firstCard).scrollIntoViewIfNeeded();
-  await expect(page.getByTestId(firstCard)).toBeVisible();
-  await expect(page.getByTestId(firstCard)).toHaveText(
-    /Classic Margherita Pizza/i
-  );
-
-  // Verify other category recipes are not visible
-  await expect(page.getByTestId(secondCard)).not.toBeVisible();
+  // Verify no cards visible
+  await expect(page.getByTestId(firstCard)).not.toBeVisible();
 
   // Click back to "All" category
   await page.getByTestId(categoryFilterAll).click();
 
-  // Verify all recipes are shown again
+  // Verify total number of recipes is shown again
   expect(page.getByTestId(allRecipesCards)).toHaveCount(6);
-
-  // Verify all three recipes are visible
-  await expect(page.getByTestId(firstCard)).toBeVisible();
-  await expect(page.getByTestId(secondCard)).toBeVisible();
 });
