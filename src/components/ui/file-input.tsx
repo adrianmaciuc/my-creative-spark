@@ -1,0 +1,73 @@
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+type Props = {
+  label?: string;
+  multiple?: boolean;
+  accept?: string;
+  files?: File[];
+  onChange?: (files: File[]) => void;
+};
+
+const FileInput: React.FC<Props> = ({
+  label,
+  multiple = false,
+  accept = "image/*",
+  files = [],
+  onChange,
+}) => {
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const handleChoose = () => inputRef.current?.click();
+
+  const onFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const list = Array.from(e.target.files || []);
+    onChange?.(list);
+  };
+
+  return (
+    <div>
+      {label && <div className="mb-2 text-sm font-medium">{label}</div>}
+      <input
+        ref={inputRef}
+        type="file"
+        className="hidden"
+        accept={accept}
+        multiple={multiple}
+        onChange={onFiles}
+      />
+      <div className="flex items-center gap-3">
+        <Button type="button" size="sm" onClick={handleChoose}>
+          Choose {multiple ? "files" : "file"}
+        </Button>
+        <div className="flex gap-2 items-center">
+          {files && files.length > 0 ? (
+            files.map((f, i) => (
+              <div key={i} className="flex items-center gap-2">
+                {f.type.startsWith("image/") ? (
+                  <img
+                    src={URL.createObjectURL(f)}
+                    alt={f.name}
+                    className="h-10 w-10 rounded object-cover border"
+                  />
+                ) : (
+                  <div className="h-10 w-10 rounded border flex items-center justify-center text-xs p-1">
+                    {f.name.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <span className="text-sm truncate max-w-[12rem]">{f.name}</span>
+              </div>
+            ))
+          ) : (
+            <span className="text-sm text-muted-foreground">
+              No file chosen
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export { FileInput };

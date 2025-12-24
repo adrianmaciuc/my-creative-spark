@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { FileInput } from "@/components/ui/file-input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
@@ -79,6 +81,11 @@ const AddRecipe = () => {
       instructions
         .map((ins, i) => (i === idx ? { ...ins, ...patch } : ins))
         .map((ins, i) => ({ ...ins, stepNumber: i + 1 }))
+    );
+
+  const toggleCategory = (slug: string) =>
+    setSelectedCats((prev) =>
+      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
     );
 
   const onSubmit = async () => {
@@ -160,7 +167,7 @@ const AddRecipe = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-semibold mb-6">Add Recipe</h1>
 
-      <div className="grid gap-6">
+      <div className="grid gap-6 bg-card rounded-xl shadow-card p-6">
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <Label className="block mb-2">Title</Label>
@@ -173,7 +180,7 @@ const AddRecipe = () => {
           <div>
             <Label className="block mb-2">Difficulty</Label>
             <select
-              className="w-full border rounded h-10 px-3 bg-background"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
             >
@@ -186,8 +193,7 @@ const AddRecipe = () => {
 
         <div>
           <Label className="block mb-2">Description</Label>
-          <textarea
-            className="w-full border rounded min-h-24 p-3 bg-background"
+          <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Short description of the recipe"
@@ -320,23 +326,25 @@ const AddRecipe = () => {
         {/* Categories */}
         <div>
           <h2 className="text-xl font-medium mb-2">Categories</h2>
-          <div className="grid sm:grid-cols-3 gap-2">
-            {categories.map((c) => (
-              <label key={c.slug} className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={selectedCats.includes(c.slug)}
-                  onChange={(e) => {
-                    setSelectedCats((prev) =>
-                      e.target.checked
-                        ? [...prev, c.slug]
-                        : prev.filter((s) => s !== c.slug)
-                    );
-                  }}
-                />
-                <span>{c.name}</span>
-              </label>
-            ))}
+          <div className="flex flex-wrap gap-2">
+            {categories.map((c) => {
+              const selected = selectedCats.includes(c.slug);
+              return (
+                <button
+                  key={c.slug}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => toggleCategory(c.slug)}
+                  className={`px-3 py-1 rounded-full text-sm border transition-colors ${
+                    selected
+                      ? "bg-primary text-primary-foreground border-transparent shadow"
+                      : "bg-transparent text-muted-foreground border-border hover:bg-secondary hover:text-secondary-foreground"
+                  }`}
+                >
+                  {c.name}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -344,21 +352,19 @@ const AddRecipe = () => {
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <Label className="block mb-2">Cover Image</Label>
-            <input
-              type="file"
+            <FileInput
+              files={coverFile ? [coverFile] : []}
+              onChange={(files) => setCoverFile(files[0] || null)}
               accept="image/*"
-              onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
             />
           </div>
           <div>
             <Label className="block mb-2">Gallery Images</Label>
-            <input
-              type="file"
-              accept="image/*"
+            <FileInput
               multiple
-              onChange={(e) =>
-                setGalleryFiles(Array.from(e.target.files || []))
-              }
+              files={galleryFiles}
+              onChange={(files) => setGalleryFiles(files)}
+              accept="image/*"
             />
           </div>
         </div>
