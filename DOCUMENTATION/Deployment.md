@@ -195,6 +195,9 @@ To rollback, use the Railway UI to revert to a previous deployment or re-deploy 
 
 - _CORS errors_: In Strapi, ensure allowed origins include your frontend domain.
 - _Images not uploaded to Cloudinary_: Confirm `CLOUDINARY_*` env vars in Railway and that `@strapi/provider-upload-cloudinary` is installed.
+- _Unknown dialect `postgresql` or missing Postgres driver_: If Strapi logs `Unknown dialect postgresql`, or you see an error about a missing `pg` module, fix by:
+  - Setting `DATABASE_CLIENT=postgres` (some platforms use `postgresql` by default) and redeploying, and/or
+  - Installing the Postgres driver in the backend: `cd backend && npm install pg` (ensure `pg` is listed in `backend/package.json`).
 - _Database connection issues_: Confirm `DATABASE_URL` is correct and that SSL settings are consistent with Strapi DB config.
 - _Missing recipes on frontend_: Confirm `VITE_STRAPI_URL` is set correctly on the frontend service and that Strapi `find`/`findOne` permissions are enabled for the `public` role.
 
