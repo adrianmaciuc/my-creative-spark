@@ -14,10 +14,10 @@
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
   "dependencies": {
-    "@strapi/plugin-cloud": "5.33.0",
-    "@strapi/plugin-users-permissions": "5.33.0",
-    "@strapi/provider-upload-cloudinary": "^5.33.0",
-    "@strapi/strapi": "5.33.0",
+    "@strapi/plugin-cloud": "5.33.2",
+    "@strapi/plugin-users-permissions": "5.33.2",
+    "@strapi/provider-upload-cloudinary": "5.33.2",
+    "@strapi/strapi": "5.33.2",
     "better-sqlite3": "12.4.1",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.16.3",
