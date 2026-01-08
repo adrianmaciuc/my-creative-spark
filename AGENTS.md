@@ -133,11 +133,92 @@ test("home page search", async ({ page }) => {
 - **Client Library**: Centralized in `src/lib/strapi.ts`
 - **Fallback**: App falls back to `src/lib/sample-recipes.ts` when backend unavailable
 - **Mapping**: Use helper functions for API response transformation
+- **Health Check**: `GET /api/health` endpoint verifies database connectivity
+- **Protected Creation**: `POST /api/recipes/create-from-access` for authenticated recipe submission
+
+### Backend Configuration
+- **Environment Variables**: Strapi uses standard env vars (DATABASE_URL, etc.) with `env()` helper
+- **Database**: SQLite for development, PostgreSQL for production
+- **Upload Provider**: Configured in `backend/config/plugins.ts` with Cloudinary settings
+- **Security Keys**: APP_KEYS, API_TOKEN_SALT, ADMIN_JWT_SECRET, JWT_SECRET (generate securely)
+- **Server Config**: Host/port settings in `backend/config/server.ts`
+
+### Business Logic & Features
+- **Access Gate**: Secret key authentication system for protected recipe creation
+- **Content Management**: Strapi admin panel for recipe and category management
+- **File Uploads**: Automatic image handling via Cloudinary in production
+- **Slug Generation**: Automatic URL-friendly slugs from recipe titles
+- **Category Resolution**: Dynamic category assignment by slug during recipe creation
+- **Recipe Publishing**: Automatic publishing after successful creation and upload
 
 ### Git Workflow
 - **Commits**: Follow conventional commit format when possible
 - **Branches**: Feature branches for new work
 - **Pre-commit**: ESLint runs automatically (if configured)
+
+## 🔧 Backend Development Guidelines
+
+### Backend Build Commands
+- `cd backend && npm run dev` - Start Strapi development server (port 1337)
+- `cd backend && npm run build` - Build Strapi for production
+- `cd backend && npm run start` - Start production Strapi server
+- `cd backend && npm run console` - Open Strapi interactive console
+
+### Backend Architecture
+- **Framework**: Strapi v5 (headless CMS)
+- **Database**: SQLite (local), PostgreSQL (production)
+- **Upload Provider**: Local files (dev), Cloudinary (production)
+- **Node Version**: 20.0.0 <= version <= 24.x.x
+
+### Strapi Content Types
+- **Recipe** collection type with fields:
+  - `title` (Text, required), `slug` (UID, required), `description` (Text, required)
+  - `coverImage` (Media, single, required), `galleryImages` (Media, multiple)
+  - `ingredients` (Component, repeatable, Ingredient component)
+  - `instructions` (Component, repeatable, Instruction component)
+  - `prepTime` (Number, integer, required), `cookTime` (Number, integer, required)
+  - `servings` (Number, integer, required, min: 1), `difficulty` (Enum: Easy/Medium/Hard)
+  - `categories` (Relation, belongs to many Categories), `tags` (JSON array)
+
+- **Category** collection type with `name` (Text, required), `slug` (UID, required)
+
+- **Ingredient** component with `item`, `quantity`, `unit`, `notes` fields
+- **Instruction** component with `stepNumber`, `description`, `tips`, `image` fields
+
+### Custom Endpoints
+- `GET /api/health` - Health check endpoint (verifies database connection)
+- `POST /api/recipes/create-from-access` - Protected recipe creation (requires access token)
+- Standard Strapi CRUD endpoints for recipes and categories
+
+## 🔐 Access Gate System
+
+### Authentication Flow
+- **Secret Key**: Single server-side secret stored in `ACCESS_SECRET_KEY` environment variable
+- **Token Storage**: JWT tokens in HttpOnly, Secure cookies (24-hour expiry)
+- **Verification**: Constant-time comparison to prevent timing attacks
+- **Fallback**: Authorization header support for localStorage grants
+
+### Protected Recipe Creation
+- **Endpoint**: `POST /api/recipes/create-from-access`
+- **Authentication**: Requires valid access token (cookie or Bearer header)
+- **Role Check**: Verifies `role: "chef"` in JWT payload
+- **Features**: Multipart form handling, automatic slug generation, category resolution by slugs, file uploads
+
+### Chef Access Verification
+```typescript
+// Server-side verification logic
+const verifyChefAccess = (ctx) => {
+  // Check HttpOnly cookie first
+  const token = ctx.cookies.get('access_token');
+  if (token) {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    return decoded.role === 'chef';
+  }
+  // Fallback to Authorization header
+  const grant = JSON.parse(authHeader.substring(7));
+  return grant.expiresAt > Date.now();
+};
+```
 
 ## 📋 Copilot Rules Integration
 
@@ -151,6 +232,13 @@ test("home page search", async ({ page }) => {
 - When suggesting UI changes, add `data-testid="..."` attributes to elements for Playwright tests
 - Update `src/lib/strapi.ts` when API contract or URL handling changes
 - For build-time env vars: `VITE_` variables are inlined at build time
+
+### Backend Conventions (backend/)
+- Strapi v5 configuration uses `env()` pattern for environment variables
+- Use `strapi.entityService` for database operations
+- Follow Strapi v5 controller/router patterns
+- Upload handling via `strapi.plugin("upload").service("upload")`
+- Custom routes defined in `src/api/*/routes/` directories
 
 ### Testing Conventions (Playwright)
 - E2E tests live under `playwright/tests/` with clear structure
@@ -191,5 +279,8 @@ test("home page search", async ({ page }) => {
 - **README.md**: Complete setup and deployment instructions
 - **development-plan.md**: Implementation plan and backend content types
 - **.github/copilot-instructions.md**: Detailed Copilot guidance (source of many rules above)
+- **DOCUMENTATION/StrapiConfigurationGuide.md**: Step-by-step Strapi CMS setup
+- **DOCUMENTATION/DevelopmentPlan.md**: Complete feature status and business logic
+- **DOCUMENTATION/AccessGatePlan.md**: Access gate authentication system details
 - **Strapi Documentation**: For backend API understanding</content>
 <parameter name="filePath">/home/adi/Desktop/code/retete-martioli/AGENTS.md
