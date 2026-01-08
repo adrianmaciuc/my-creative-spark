@@ -480,7 +480,7 @@ export interface ApiRecipeRecipe extends Struct.CollectionTypeSchema {
       'api::category.category'
     >;
     cookTime: Schema.Attribute.Integer & Schema.Attribute.Required;
-    coverImage: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    coverImage: Schema.Attribute.Media<'images'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -490,8 +490,7 @@ export interface ApiRecipeRecipe extends Struct.CollectionTypeSchema {
         maxLength: 1000;
       }>;
     difficulty: Schema.Attribute.Enumeration<['easy', 'medium', 'hard']>;
-    galleryImage: Schema.Attribute.Media<'images', true> &
-      Schema.Attribute.Required;
+    galleryImage: Schema.Attribute.Media<'images', true>;
     ingredients: Schema.Attribute.Component<'recipe.ingredient', true> &
       Schema.Attribute.Required;
     instructions: Schema.Attribute.Component<'recipe.instruction', true> &
